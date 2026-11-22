@@ -3,116 +3,211 @@ import {
   Activity, AlertTriangle, CheckCircle2, ChevronRight, Compass, 
   Cpu, Droplet, Download, Eye, FileText, Gauge, Info, Layers, 
   MapPin, Play, Pause, RefreshCw, Shield, Sparkles, User, Users, 
-  Wifi, WifiOff, Wind, Zap, BarChart3, Sliders, BatteryCharging
+  Wifi, WifiOff, Wind, Zap, BarChart3, Sliders, BatteryCharging,
+  Printer, X, Calculator, Scan, Volume2, CloudRain, Sun, Award
 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSimulating, setIsSimulating] = useState(true);
   const [selectedOperator, setSelectedOperator] = useState('OP-104');
-  
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [hapticFeedbackAlert, setHapticFeedbackAlert] = useState(null);
+
+  // Chemical Calculator State
+  const [selectedPest, setSelectedPest] = useState('helopeltis');
+  const [knapsackCapacity, setKnapsackCapacity] = useState(16); // Litres
+  const [targetHectares, setTargetHectares] = useState(1.5);
+
   // Real-time telemetry simulation state
   const [telemetry, setTelemetry] = useState({
     flowRate: 720, // mL/min
     pressure: 2.8, // bar
     lanceAngle: 28, // degrees
-    walkingSpeed: 2.4, // km/h
+    walkingSpeed: 2.3, // km/h
     appliedVolume: 18.4, // Litres
     targetVolume: 25.0, // Litres
     battery: 88, // %
     coverageUniformity: 94.2, // %
-    driftRisk: 'Low (0.8 m/s wind)',
+    driftRisk: 'Low (0.9 m/s wind)',
     status: 'Optimal'
   });
 
-  // Simulated live tick
+  // Operators List
+  const operators = [
+    { id: 'OP-104', name: 'Ratan Karmakar', experience: '6 yrs', rows: '13-15', tanks: 6, score: 94.8, status: 'Optimal' },
+    { id: 'OP-108', name: 'Biren Orang', experience: '4 yrs', rows: '16-18', tanks: 5, score: 91.2, status: 'Pace Alert' },
+    { id: 'OP-112', name: 'Sunita Munda', experience: '8 yrs', rows: '19-21', tanks: 7, score: 96.5, status: 'Optimal' },
+    { id: 'OP-115', name: 'Dipak Tanti', experience: '3 yrs', rows: '22-24', tanks: 4, score: 88.4, status: 'Low Pressure' }
+  ];
+
+  // Pest and formulation database (TRA Tocklai guidelines)
+  const pestDatabase = {
+    helopeltis: {
+      name: 'Tea Mosquito Bug (Helopeltis theivora)',
+      chemical: 'Thiamethoxam 25% WG',
+      recommendation: '100g in 400L water per Hectare',
+      dosagePerLitre: 0.25, // grams/Litre
+      phiDays: 7,
+      sprayVolumePerHa: 400,
+      season: 'April – October'
+    },
+    red_spider: {
+      name: 'Red Spider Mite (Oligonychus coffeae)',
+      chemical: 'Propargite 57% EC',
+      recommendation: '500mL in 400L water per Hectare',
+      dosagePerLitre: 1.25, // mL/Litre
+      phiDays: 14,
+      sprayVolumePerHa: 400,
+      season: 'March – June / Autumn'
+    },
+    blister_blight: {
+      name: 'Blister Blight (Exobasidium vexans)',
+      chemical: 'Hexaconazole 5% EC + Copper Oxychloride',
+      recommendation: '200mL Hexaconazole + 250g COC in 350L per Ha',
+      dosagePerLitre: 0.6, // mL/Litre
+      phiDays: 10,
+      sprayVolumePerHa: 350,
+      season: 'Monsoon / High Humidity'
+    },
+    looper: {
+      name: 'Tea Looper Caterpillar (Hyposidra talaca)',
+      chemical: 'Emamectin Benzoate 5% SG',
+      recommendation: '200g in 400L water per Hectare',
+      dosagePerLitre: 0.5, // grams/Litre
+      phiDays: 7,
+      sprayVolumePerHa: 400,
+      season: 'May – September'
+    }
+  };
+
+  // Sound generator for haptic trigger simulation (Web Audio API)
+  const playHapticBeep = (pulses, desc) => {
+    setHapticFeedbackAlert(desc);
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      for (let i = 0; i < pulses; i++) {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440 + i * 120, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.16);
+        }, i * 220);
+      }
+    } catch (e) {
+      console.log('Audio not enabled');
+    }
+    setTimeout(() => setHapticFeedbackAlert(null), 3000);
+  };
+
+  // Simulated live telemetry stream
   useEffect(() => {
     if (!isSimulating) return;
     const interval = setInterval(() => {
       setTelemetry(prev => {
-        const deltaFlow = (Math.random() - 0.48) * 20;
+        const deltaFlow = (Math.random() - 0.48) * 22;
         const deltaSpeed = (Math.random() - 0.5) * 0.15;
-        const newFlow = Math.max(620, Math.min(850, prev.flowRate + deltaFlow));
-        const newSpeed = Math.max(1.8, Math.min(3.4, prev.walkingSpeed + deltaSpeed));
+        const newFlow = Math.max(630, Math.min(840, prev.flowRate + deltaFlow));
+        const newSpeed = Math.max(1.8, Math.min(3.3, prev.walkingSpeed + deltaSpeed));
         const newApplied = Math.min(prev.targetVolume, prev.appliedVolume + (newFlow / 60000));
         
         let status = 'Optimal';
-        if (newSpeed > 3.0) status = 'Under-spraying (Pace High)';
-        else if (newFlow < 660) status = 'Low Nozzle Pressure';
+        if (newSpeed > 2.8) status = 'Under-spraying (Pace High)';
+        else if (newFlow < 650) status = 'Low Nozzle Pressure';
 
         return {
           ...prev,
           flowRate: Math.round(newFlow),
           pressure: +(2.6 + (newFlow - 650) * 0.002).toFixed(2),
-          lanceAngle: Math.round(26 + Math.sin(Date.now() / 1500) * 8),
+          lanceAngle: Math.round(27 + Math.sin(Date.now() / 1500) * 7),
           walkingSpeed: +newSpeed.toFixed(2),
           appliedVolume: +newApplied.toFixed(2),
-          coverageUniformity: +(92 + Math.random() * 4).toFixed(1),
+          coverageUniformity: +(92.5 + Math.random() * 3.5).toFixed(1),
           status
         };
       });
-    }, 1200);
+    }, 1300);
     return () => clearInterval(interval);
   }, [isSimulating]);
 
+  const currentPest = pestDatabase[selectedPest];
+  const requiredTotalSolution = targetHectares * currentPest.sprayVolumePerHa;
+  const tanksNeeded = Math.ceil(requiredTotalSolution / knapsackCapacity);
+  const chemicalPerTank = (currentPest.dosagePerLitre * knapsackCapacity).toFixed(1);
+  const totalChemicalRequired = (currentPest.dosagePerLitre * requiredTotalSolution).toFixed(1);
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       {/* Top Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-40 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <Droplet className="w-6 h-6 text-slate-950 fill-slate-950" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-600/15">
+            <Droplet className="w-6 h-6 text-white fill-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">
-                ChaiRakshak
+              <span className="font-extrabold text-xl tracking-tight text-slate-900">
+                Chai<span className="text-emerald-600">Rakshak</span>
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
                 NESFIC-I-06
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+              <span className="hidden sm:inline text-xs px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-medium">
                 TRA Tocklai Compliant
               </span>
             </div>
-            <p className="text-xs text-slate-400">Smart Manual & Operator-Carried Spray Monitoring Platform</p>
+            <p className="text-xs text-slate-500">Smart Manual & Operator-Carried Spray Monitoring Platform</p>
           </div>
         </div>
 
         {/* Global Estate Status */}
-        <div className="flex items-center gap-6 text-sm">
-          <div className="hidden lg:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
-            <MapPin className="w-4 h-4 text-emerald-400" />
-            <span className="text-slate-300">Jorhat Tea Estate · Block 4C (Clonal TV-1)</span>
+        <div className="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm">
+          {/* Weather Widget */}
+          <div className="flex items-center gap-2 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+            <Wind className="w-4 h-4 text-teal-600" />
+            <span className="font-medium">1.1 m/s NW</span>
+            <span className="text-[11px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-medium">Safe Drift</span>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-slate-300 font-mono">14 Active Sprayers</span>
+          <div className="hidden md:flex items-center gap-2 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+            <MapPin className="w-4 h-4 text-emerald-600" />
+            <span>Jorhat Estate · Section 4C</span>
+          </div>
+
+          <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 text-emerald-800 font-medium">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span>14 Sprayers Online</span>
           </div>
 
           <button 
             onClick={() => setIsSimulating(!isSimulating)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition shadow-sm ${
               isSimulating 
-                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 hover:bg-emerald-500/30' 
-                : 'bg-amber-500/20 border-amber-500 text-amber-300 hover:bg-amber-500/30'
+                ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700' 
+                : 'bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200'
             }`}
           >
             {isSimulating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            {isSimulating ? 'Live Telemetry Active' : 'Simulation Paused'}
+            {isSimulating ? 'Live Telemetry' : 'Paused'}
           </button>
         </div>
       </header>
 
       {/* Navigation Bar */}
-      <div className="border-b border-slate-800 bg-slate-900/50 px-6 flex space-x-6 text-sm overflow-x-auto">
+      <div className="border-b border-slate-200 bg-white px-6 flex space-x-6 text-sm overflow-x-auto shadow-sm">
         {[
           { id: 'dashboard', label: 'Field Operations Live Map', icon: Activity },
-          { id: 'telemetry', label: 'Operator Lance Telemetry', icon: Gauge },
-          { id: 'compliance', label: 'TRA Dosage & MRL Safety', icon: Shield },
+          { id: 'telemetry', label: 'Lance Kinematics & Haptics', icon: Gauge },
+          { id: 'calculator', label: 'TRA Chemical & Tank Calculator', icon: Calculator },
+          { id: 'wsp', label: 'WSP Droplet Scanner', icon: Scan },
+          { id: 'compliance', label: 'MRL & Audit Certificate', icon: Shield },
           { id: 'hardware', label: 'IoT Retrofit Kit Spec', icon: Cpu },
-          { id: 'proposal', label: 'NESFIC-I-06 Proposal Dossier', icon: FileText },
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -120,10 +215,10 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-3 border-b-2 font-medium transition whitespace-nowrap ${
+              className={`flex items-center gap-2 py-3.5 border-b-2 font-medium transition whitespace-nowrap text-xs sm:text-sm ${
                 isActive 
-                  ? 'border-emerald-400 text-emerald-400' 
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-emerald-600 text-emerald-700 font-semibold' 
+                  : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -133,6 +228,17 @@ export default function App() {
         })}
       </div>
 
+      {/* Active Haptic Alert Floating Pill */}
+      {hapticFeedbackAlert && (
+        <div className="fixed bottom-6 right-6 z-50 bg-amber-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
+          <Zap className="w-5 h-5 text-amber-200 animate-pulse" />
+          <div>
+            <div className="font-bold text-xs uppercase tracking-wide">Lance Haptic Grip Vibrating</div>
+            <div className="text-xs">{hapticFeedbackAlert}</div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
 
@@ -141,82 +247,88 @@ export default function App() {
           <div className="space-y-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
                 <div className="flex justify-between items-start">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Treated Area</span>
-                  <Layers className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Treated Area</span>
+                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><Layers className="w-4 h-4" /></div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold font-mono text-emerald-400">12.6</span>
-                  <span className="text-xs text-slate-400">/ 16.0 Hectares (78%)</span>
+                  <span className="text-2xl font-bold font-mono text-slate-900">12.6</span>
+                  <span className="text-xs text-slate-500">/ 16.0 Ha (78%)</span>
                 </div>
-                <div className="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: '78%' }}></div>
+                <div className="w-full bg-slate-100 h-2 rounded-full mt-3 overflow-hidden">
+                  <div className="bg-emerald-600 h-full rounded-full transition-all duration-500" style={{ width: '78%' }}></div>
                 </div>
               </div>
 
-              <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
                 <div className="flex justify-between items-start">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Uniformity Score</span>
-                  <Sparkles className="w-4 h-4 text-teal-400" />
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Uniformity Score</span>
+                  <div className="p-2 bg-teal-50 rounded-lg text-teal-600"><Sparkles className="w-4 h-4" /></div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold font-mono text-teal-300">{telemetry.coverageUniformity}%</span>
-                  <span className="text-xs text-emerald-400 font-medium">TRA Grade A</span>
+                  <span className="text-2xl font-bold font-mono text-teal-700">{telemetry.coverageUniformity}%</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">TRA Grade A</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">Target: 400-450 L/ha knapsack standard</p>
+                <p className="text-xs text-slate-500 mt-2">Target: 400-450 L/ha canopy norm</p>
               </div>
 
-              <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
                 <div className="flex justify-between items-start">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Chemical Savings</span>
-                  <Droplet className="w-4 h-4 text-blue-400" />
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Chemical Savings</span>
+                  <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Droplet className="w-4 h-4" /></div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold font-mono text-blue-400">22.8%</span>
-                  <span className="text-xs text-slate-400">vs blind manual</span>
+                  <span className="text-2xl font-bold font-mono text-blue-700">22.8%</span>
+                  <span className="text-xs text-slate-500">vs unmonitored</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">₹1,420 saved per hectare on actives</p>
+                <p className="text-xs text-slate-500 mt-2">₹1,420 saved / Ha on active ingredients</p>
               </div>
 
-              <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
                 <div className="flex justify-between items-start">
-                  <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Operator Safety & Pace</span>
-                  <Shield className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Operator Safety & Pace</span>
+                  <div className="p-2 bg-amber-50 rounded-lg text-amber-600"><Shield className="w-4 h-4" /></div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold font-mono text-amber-300">100%</span>
-                  <span className="text-xs text-slate-400">PPE & Safe Drift Norms</span>
+                  <span className="text-2xl font-bold font-mono text-amber-700">100%</span>
+                  <span className="text-xs text-slate-500">PPE & Safe Drift</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">Wind 0.8 m/s · Safe plucking buffer active</p>
+                <p className="text-xs text-slate-500 mt-2">Wind 1.1 m/s · Safe buffer enforced</p>
               </div>
             </div>
 
-            {/* Simulated Live Spatial Map */}
+            {/* Spatial Swath Coverage Map */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left 2 Cols: Plantation Plot Grid View */}
-              <div className="lg:col-span-2 bg-slate-900/90 rounded-2xl border border-slate-800 p-5 space-y-4">
+              <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 space-y-5 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-                      <Compass className="w-5 h-5 text-emerald-400" />
+                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <Compass className="w-5 h-5 text-emerald-600" />
                       Live Spatial Swath Coverage (Jorhat Section 4C)
                     </h2>
-                    <p className="text-xs text-slate-400">Real-time GPS swath interpolation & under/over spray detection</p>
+                    <p className="text-xs text-slate-500">Real-time GPS swath interpolation & under/over spray detection</p>
                   </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-blue-500/80"></span> Under (&lt;350L)</span>
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500"></span> Optimal (400-450L)</span>
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-500/80"></span> Over (&gt;500L)</span>
+                  <div className="flex items-center gap-3 text-xs">
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <span className="w-3 h-3 rounded bg-blue-500"></span> Under (&lt;350L)
+                    </span>
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <span className="w-3 h-3 rounded bg-emerald-500"></span> Optimal (400-450L)
+                    </span>
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <span className="w-3 h-3 rounded bg-red-400"></span> Over (&gt;500L)
+                    </span>
                   </div>
                 </div>
 
                 {/* Interactive Simulated Tea Bush Grid */}
-                <div className="relative bg-slate-950 rounded-xl p-4 border border-slate-800 h-80 flex flex-col justify-between overflow-hidden">
+                <div className="relative bg-slate-900 rounded-xl p-5 border border-slate-800 h-80 flex flex-col justify-between overflow-hidden shadow-inner">
                   {/* Grid Lines resembling tea rows */}
-                  <div className="absolute inset-0 grid grid-cols-8 grid-rows-6 gap-1 p-2 opacity-30 pointer-events-none">
+                  <div className="absolute inset-0 grid grid-cols-8 grid-rows-6 gap-1 p-2 opacity-25 pointer-events-none">
                     {Array.from({ length: 48 }).map((_, i) => (
-                      <div key={i} className="border border-emerald-900/40 rounded bg-emerald-950/20"></div>
+                      <div key={i} className="border border-emerald-700/50 rounded bg-emerald-900/10"></div>
                     ))}
                   </div>
 
@@ -225,9 +337,9 @@ export default function App() {
                     {/* Row 1 */}
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono text-slate-400 w-16">Row 10-12</span>
-                      <div className="flex-1 h-7 bg-emerald-900/40 border border-emerald-500/40 rounded-lg flex items-center px-3 relative overflow-hidden">
-                        <div className="w-full bg-emerald-500/30 h-full absolute inset-0"></div>
-                        <span className="relative z-10 text-xs text-emerald-300 font-mono">100% Completed · Uniformity 96.1%</span>
+                      <div className="flex-1 h-7 bg-emerald-950/70 border border-emerald-500/50 rounded-lg flex items-center px-3 relative overflow-hidden">
+                        <div className="w-full bg-emerald-500/40 h-full absolute inset-0"></div>
+                        <span className="relative z-10 text-xs text-emerald-300 font-mono font-medium">100% Completed · Uniformity 96.1%</span>
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 ml-auto relative z-10" />
                       </div>
                     </div>
@@ -235,14 +347,14 @@ export default function App() {
                     {/* Row 2 (Active Sprayer OP-104) */}
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono text-slate-400 w-16">Row 13-15</span>
-                      <div className="flex-1 h-9 bg-slate-900 border border-emerald-500/60 rounded-lg flex items-center px-3 relative overflow-hidden shadow-inner">
-                        <div className="bg-gradient-to-r from-emerald-500/40 via-emerald-400/30 to-teal-400/20 h-full absolute inset-0" style={{ width: '65%' }}></div>
+                      <div className="flex-1 h-9 bg-slate-800 border-2 border-emerald-400 rounded-lg flex items-center px-3 relative overflow-hidden shadow-lg">
+                        <div className="bg-gradient-to-r from-emerald-500/60 via-emerald-400/50 to-teal-400/30 h-full absolute inset-0 transition-all duration-300" style={{ width: '68%' }}></div>
                         <div className="relative z-10 flex items-center justify-between w-full">
-                          <span className="text-xs text-slate-200 font-semibold flex items-center gap-2">
+                          <span className="text-xs text-white font-semibold flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                            Operator OP-104 (Ratan Karmakar) · 65% Swath Sprayed
+                            Operator OP-104 (R. Karmakar) · 68% Swath Sprayed
                           </span>
-                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/30 text-emerald-200 border border-emerald-400/30">
                             {telemetry.flowRate} mL/min · {telemetry.walkingSpeed} km/h
                           </span>
                         </div>
@@ -252,18 +364,18 @@ export default function App() {
                     {/* Row 3 (Active Sprayer OP-108) */}
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono text-slate-400 w-16">Row 16-18</span>
-                      <div className="flex-1 h-7 bg-slate-900 border border-slate-700 rounded-lg flex items-center px-3 relative overflow-hidden">
-                        <div className="bg-emerald-500/20 h-full absolute inset-0" style={{ width: '40%' }}></div>
-                        <span className="relative z-10 text-xs text-slate-300 font-mono">Operator OP-108 · 40% Swath Sprayed</span>
+                      <div className="flex-1 h-7 bg-slate-800/80 border border-slate-700 rounded-lg flex items-center px-3 relative overflow-hidden">
+                        <div className="bg-emerald-500/30 h-full absolute inset-0" style={{ width: '42%' }}></div>
+                        <span className="relative z-10 text-xs text-slate-200 font-mono">Operator OP-108 · 42% Swath Sprayed</span>
                         <span className="relative z-10 text-xs text-slate-400 ml-auto font-mono">2.1 km/h</span>
                       </div>
                     </div>
 
-                    {/* Row 4 (Pending) */}
+                    {/* Row 4 (Queued) */}
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-mono text-slate-500 w-16">Row 19-21</span>
-                      <div className="flex-1 h-7 bg-slate-900/40 border border-dashed border-slate-800 rounded-lg flex items-center px-3">
-                        <span className="text-xs text-slate-500">Queued for Morning Shift 2 · Copper Oxychloride 50% WP</span>
+                      <div className="flex-1 h-7 bg-slate-800/40 border border-dashed border-slate-700 rounded-lg flex items-center px-3">
+                        <span className="text-xs text-slate-400">Queued for Shift 2 · Copper Oxychloride 50% WP</span>
                       </div>
                     </div>
                   </div>
@@ -271,95 +383,95 @@ export default function App() {
                   {/* Footnotes */}
                   <div className="relative z-10 border-t border-slate-800 pt-2 flex items-center justify-between text-[11px] text-slate-400">
                     <span>GPS GNSS Accuracy: ±0.35m RTK-assisted</span>
-                    <span>Offline Sync Buffer: 0 pending packets (BLE mesh sync active)</span>
+                    <span>Offline Sync Buffer: 0 pending packets (BLE mesh active)</span>
                   </div>
                 </div>
 
-                {/* Live Real-Time Alert Banner */}
-                <div className={`p-3 rounded-xl border flex items-center gap-3 text-xs ${
+                {/* Live Alert Banner */}
+                <div className={`p-4 rounded-xl border flex items-center gap-3 text-xs ${
                   telemetry.status === 'Optimal' 
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                    : 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    : 'bg-amber-50 border-amber-200 text-amber-900'
                 }`}>
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <AlertTriangle className={`w-4 h-4 shrink-0 ${telemetry.status === 'Optimal' ? 'text-emerald-600' : 'text-amber-600'}`} />
                   <div className="flex-1">
-                    <span className="font-semibold">Live System Status: {telemetry.status}.</span>{' '}
+                    <span className="font-bold">Live Status: {telemetry.status}.</span>{' '}
                     {telemetry.status === 'Optimal'
                       ? 'Walking pace and lance trajectory match TRA Tocklai recommended 420 L/ha canopy penetration.'
-                      : 'Audio-haptic alert vibrated on operator lance grip to adjust pacing.'}
+                      : 'Audio-haptic alert vibrated on operator lance grip to prompt pace adjustment.'}
                   </div>
                 </div>
               </div>
 
-              {/* Right Col: Active Operator Focus Panel */}
-              <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-5 space-y-4">
+              {/* Right Col: Active Operator Focus Panel & Leaderboard */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-5 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-                    <User className="w-4 h-4 text-emerald-400" />
-                    Operator Live Profile
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Users className="w-4 h-4 text-emerald-600" />
+                    Section Spray Team (4 Active)
                   </h3>
                   <select 
                     value={selectedOperator} 
                     onChange={e => setSelectedOperator(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-xs rounded-lg px-2 py-1 text-slate-200 focus:outline-none"
+                    className="bg-slate-50 border border-slate-300 text-xs rounded-lg px-2 py-1 text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
-                    <option value="OP-104">OP-104 · R. Karmakar</option>
-                    <option value="OP-108">OP-108 · B. Orang</option>
-                    <option value="OP-112">OP-112 · S. Munda</option>
+                    {operators.map(op => (
+                      <option key={op.id} value={op.id}>{op.id} · {op.name}</option>
+                    ))}
                   </select>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span>Nozzle Flow Rate</span>
-                      <span className="font-mono text-emerald-400 font-bold">{telemetry.flowRate} mL/min</span>
+                {/* Operator Telemetry Card */}
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500 font-medium">Nozzle Discharge</span>
+                    <span className="font-mono text-emerald-700 font-bold text-sm">{telemetry.flowRate} mL/min</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500 font-medium">Manifold Pressure</span>
+                    <span className="font-mono text-slate-800 font-semibold">{telemetry.pressure} bar</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500 font-medium">Walking Pace</span>
+                    <span className="font-mono text-slate-800 font-semibold">{telemetry.walkingSpeed} km/h</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500 font-medium">Lance Angle</span>
+                    <span className="font-mono text-slate-800 font-semibold">{telemetry.lanceAngle}° (Ideal: 25°-35°)</span>
+                  </div>
+                  <div className="border-t border-slate-200 pt-2.5">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-slate-600 font-medium">Tank Volume Sprayed</span>
+                      <span className="font-mono text-emerald-700 font-bold">{telemetry.appliedVolume} / {telemetry.targetVolume} L</span>
                     </div>
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span>Manifold Pressure</span>
-                      <span className="font-mono text-cyan-400">{telemetry.pressure} bar</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span>Walking Pace</span>
-                      <span className="font-mono text-amber-300">{telemetry.walkingSpeed} km/h</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span>Lance Angle to Canopy</span>
-                      <span className="font-mono text-purple-300">{telemetry.lanceAngle}° (Optimal: 25°-35°)</span>
+                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div className="bg-emerald-600 h-full rounded-full transition-all duration-500" style={{ width: `${(telemetry.appliedVolume / telemetry.targetVolume) * 100}%` }}></div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Tank Level Gauge */}
-                  <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-300 font-medium">Knapsack Tank Solution</span>
-                      <span className="font-mono text-emerald-400 font-bold">
-                        {telemetry.appliedVolume} / {telemetry.targetVolume} L
-                      </span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                {/* Team Leaderboard Table */}
+                <div className="space-y-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Uniformity Leaderboard</span>
+                  <div className="space-y-1.5">
+                    {operators.map(op => (
                       <div 
-                        className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" 
-                        style={{ width: `${(telemetry.appliedVolume / telemetry.targetVolume) * 100}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-[11px] text-slate-400">Active Formulation: Hexaconazole 5% EC (Blister Blight protocol)</p>
-                  </div>
-
-                  {/* Kit Hardware Health */}
-                  <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 flex items-center gap-1.5">
-                        <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" /> Battery Status
-                      </span>
-                      <span className="font-mono text-slate-200">{telemetry.battery}% (~14 hrs left)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 flex items-center gap-1.5">
-                        <Wifi className="w-3.5 h-3.5 text-emerald-400" /> Uplink
-                      </span>
-                      <span className="text-emerald-400 font-mono">LoRaWAN + BLE Gateway</span>
-                    </div>
+                        key={op.id}
+                        onClick={() => setSelectedOperator(op.id)}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between text-xs cursor-pointer transition ${
+                          selectedOperator === op.id ? 'bg-emerald-50 border-emerald-300 shadow-sm' : 'bg-white border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-semibold text-slate-900">{op.name}</div>
+                          <div className="text-[11px] text-slate-500">{op.id} · Rows {op.rows}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono font-bold text-emerald-700">{op.score}%</div>
+                          <div className={`text-[10px] font-medium ${op.status === 'Optimal' ? 'text-emerald-600' : 'text-amber-600'}`}>{op.status}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -367,142 +479,106 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 2: OPERATOR LANCE TELEMETRY */}
+        {/* TAB 2: LANCE KINEMATICS & HAPTIC SIMULATOR */}
         {activeTab === 'telemetry' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
               <div>
-                <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                  <Gauge className="w-5 h-5 text-emerald-400" />
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Gauge className="w-5 h-5 text-emerald-600" />
                   Spray Lance Kinematics & Ultrasonic Flow Sensing
                 </h2>
-                <p className="text-xs text-slate-400">
-                  Dual-sensor retrofitting clips onto standard hollow-cone/flood-jet lances without altering weight or center of gravity.
+                <p className="text-xs text-slate-500">
+                  Dual-sensor retrofitting clips onto standard hollow-cone/flood-jet lances without altering weight or balance.
                 </p>
               </div>
 
               {/* Sensor Visual Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-emerald-400 uppercase">1. Ultrasonic Flow Meter</span>
-                    <Activity className="w-4 h-4 text-emerald-400" />
+                    <span className="text-xs font-bold text-emerald-700 uppercase">1. Ultrasonic Flow Meter</span>
+                    <Activity className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <div className="text-2xl font-bold font-mono text-slate-100">{telemetry.flowRate} <span className="text-sm font-normal text-slate-400">mL/min</span></div>
-                  <p className="text-xs text-slate-400">Non-intrusive piezo-ceramic transit time sensor. No moving parts; immune to chemical clogging or pesticide slurry buildup.</p>
-                  <div className="text-xs text-emerald-400">Calibration: ±1.5% accuracy</div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900">{telemetry.flowRate} <span className="text-sm font-normal text-slate-500">mL/min</span></div>
+                  <p className="text-xs text-slate-600">Non-intrusive piezo-ceramic transit time sensor. No moving parts; immune to chemical clogging or pesticide slurry buildup.</p>
+                  <div className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg inline-block border border-emerald-200">
+                    Calibration: ±1.5% accuracy
+                  </div>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-teal-400 uppercase">2. 6-Axis Lance IMU</span>
-                    <Compass className="w-4 h-4 text-teal-400" />
+                    <span className="text-xs font-bold text-teal-700 uppercase">2. 6-Axis Lance IMU</span>
+                    <Compass className="w-4 h-4 text-teal-600" />
                   </div>
-                  <div className="text-2xl font-bold font-mono text-slate-100">{telemetry.lanceAngle}° <span className="text-sm font-normal text-slate-400">pitch angle</span></div>
-                  <p className="text-xs text-slate-400">Monitors lance sweeping arc, height above tea canopy (ideal 30-45 cm), and prevents operator fatigue-induced pointing drift.</p>
-                  <div className="text-xs text-teal-400">Sampling Rate: 50 Hz on-device filter</div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900">{telemetry.lanceAngle}° <span className="text-sm font-normal text-slate-500">pitch angle</span></div>
+                  <p className="text-xs text-slate-600">Monitors lance sweeping arc, height above tea canopy (ideal 30-45 cm), and prevents operator fatigue-induced pointing drift.</p>
+                  <div className="text-xs font-medium text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg inline-block border border-teal-200">
+                    Sampling Rate: 50 Hz on-device filter
+                  </div>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-amber-400 uppercase">3. Real-Time Haptic Gripper</span>
-                    <Zap className="w-4 h-4 text-amber-400" />
+                    <span className="text-xs font-bold text-amber-700 uppercase">3. Real-Time Haptic Gripper</span>
+                    <Zap className="w-4 h-4 text-amber-600" />
                   </div>
-                  <div className="text-2xl font-bold font-mono text-slate-100">Active <span className="text-sm font-normal text-slate-400">Tactile Engine</span></div>
-                  <p className="text-xs text-slate-400">Vibration patterns on knapsack handle alert worker directly without needing screens: 1 pulse = pace up, 2 pulses = slow down, 3 pulses = nozzle clogged.</p>
-                  <div className="text-xs text-amber-400">Zero screen distraction for workers</div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900">Active <span className="text-sm font-normal text-slate-500">Tactile Engine</span></div>
+                  <p className="text-xs text-slate-600">Vibration patterns on knapsack handle alert worker directly without needing screens. 100% eyes-on-the-tea-bush operation.</p>
+                  <div className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg inline-block border border-amber-200">
+                    Zero screen distraction in field
+                  </div>
                 </div>
               </div>
 
-              {/* Real-Time Compliance Waveform Visualization */}
-              <div className="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-slate-200">Real-Time Swath Telemetry Stream</span>
-                  <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Synced at 1 Hz</span>
-                </div>
-                <div className="h-32 flex items-end gap-1.5 pt-4 px-2 border-b border-slate-800 overflow-hidden">
-                  {Array.from({ length: 36 }).map((_, i) => {
-                    const heightPercent = 40 + Math.sin(i * 0.4) * 25 + (i % 3 === 0 ? 10 : -5);
-                    const isOptimal = heightPercent >= 35 && heightPercent <= 65;
-                    return (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
-                        <div 
-                          className={`w-full rounded-t transition-all ${
-                            isOptimal ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-amber-500 hover:bg-amber-400'
-                          }`}
-                          style={{ height: `${heightPercent}%` }}
-                        ></div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex justify-between text-[11px] text-slate-400 pt-1">
-                  <span>T - 36s (Row Entry)</span>
-                  <span>Optimal Spray Band (400 - 450 L/ha)</span>
-                  <span>Current Moment (Row Exit)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: TRA DOSAGE & MRL SAFETY */}
-        {activeTab === 'compliance' && (
-          <div className="space-y-6">
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-6">
-              <div>
-                <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-emerald-400" />
-                  Tea Research Association (TRA) Tocklai & FSSAI MRL Compliance
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Pre-harvest interval (PHI) enforcement, chemical traceability, and European Union / FSSAI maximum residue limit safeguards.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Active Spray Schedule */}
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <h3 className="text-sm font-semibold text-emerald-400">Chemical Protocol in Action</h3>
-                  <div className="space-y-2.5 text-xs">
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Target Pest / Disease</span>
-                      <span className="text-slate-200 font-medium">Tea Mosquito Bug (Helopeltis theivora)</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Approved Chemical Formulation</span>
-                      <span className="text-slate-200 font-medium">Thiamethoxam 25% WG (TRA Approved)</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Prescribed TRA Dose</span>
-                      <span className="text-emerald-400 font-mono font-bold">100g / 400L water per Hectare</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Mandatory Pre-Harvest Interval (PHI)</span>
-                      <span className="text-amber-300 font-medium">7 Days Plucking Prohibition</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Safe Plucking Date</span>
-                      <span className="text-emerald-300 font-mono">30 Nov 2026 (Locked in ERP)</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Audit Certificate Generation */}
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-4">
+              {/* Interactive Haptic Feedback Simulator */}
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 p-6 rounded-2xl border border-emerald-200 space-y-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-teal-400">Export & Factory Audit Log</h3>
-                    <p className="text-xs text-slate-400 mt-2">
-                      Automatically generates cryptographically signed spray logs for Tea Board of India and export buyers (EU, UK, USA) to verify residue safety.
-                    </p>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Volume2 className="w-4 h-4 text-emerald-600" />
+                      Interactive Operator Haptic Feedback Tester
+                    </h3>
+                    <p className="text-xs text-slate-600">Click any trigger below to simulate and listen to the ERM tactile vibration pattern sent to the operator's grip:</p>
                   </div>
-                  <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs space-y-1 font-mono text-slate-300">
-                    <div>BATCH_ID: TR-2026-JOR-SEC4C</div>
-                    <div>HASH: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1f</div>
-                    <div className="text-emerald-400">STATUS: FSSAI_VERIFIED_PASS</div>
-                  </div>
-                  <button className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold text-xs flex items-center justify-center gap-2 transition">
-                    <Download className="w-4 h-4" /> Download Certified TRA Spray Audit PDF
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-600 text-white shadow-sm">
+                    Live Audio-Haptic Simulator
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <button 
+                    onClick={() => playHapticBeep(1, 'Slow Down Alert: Pace exceeds 2.8 km/h (Under-dosing risk)')}
+                    className="p-3.5 bg-white rounded-xl border border-slate-200 hover:border-emerald-400 hover:shadow-md transition text-left space-y-1 group"
+                  >
+                    <div className="font-bold text-xs text-slate-900 group-hover:text-emerald-700 flex items-center justify-between">
+                      <span>Pattern 1: Slow Down</span>
+                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                    </div>
+                    <div className="text-[11px] text-slate-500">1 Pulse · Walking too fast (&gt;2.8 km/h)</div>
+                  </button>
+
+                  <button 
+                    onClick={() => playHapticBeep(2, 'Speed Up Alert: Pace is below 1.8 km/h (Over-dosing / runoff risk)')}
+                    className="p-3.5 bg-white rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition text-left space-y-1 group"
+                  >
+                    <div className="font-bold text-xs text-slate-900 group-hover:text-teal-700 flex items-center justify-between">
+                      <span>Pattern 2: Speed Up</span>
+                      <Zap className="w-3.5 h-3.5 text-teal-600" />
+                    </div>
+                    <div className="text-[11px] text-slate-500">2 Pulses · Walking too slow (&lt;1.8 km/h)</div>
+                  </button>
+
+                  <button 
+                    onClick={() => playHapticBeep(3, 'Clog/Pressure Alert: Nozzle pressure below 2.0 bar')}
+                    className="p-3.5 bg-white rounded-xl border border-slate-200 hover:border-amber-400 hover:shadow-md transition text-left space-y-1 group"
+                  >
+                    <div className="font-bold text-xs text-slate-900 group-hover:text-amber-700 flex items-center justify-between">
+                      <span>Pattern 3: Nozzle Clog</span>
+                      <Zap className="w-3.5 h-3.5 text-amber-600" />
+                    </div>
+                    <div className="text-[11px] text-slate-500">3 Pulses · Pressure drop or lance tilt</div>
                   </button>
                 </div>
               </div>
@@ -510,82 +586,413 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 4: IOT RETROFIT KIT SPEC */}
-        {activeTab === 'hardware' && (
+        {/* TAB 3: TRA CHEMICAL & TANK CALCULATOR */}
+        {activeTab === 'calculator' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
               <div>
-                <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                  <Cpu className="w-5 h-5 text-emerald-400" />
-                  Hardware Retrofit Specifications & Edge Computing
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Calculator className="w-5 h-5 text-emerald-600" />
+                  TRA Tocklai Chemical Dosage & Knapsack Refill Calculator
                 </h2>
-                <p className="text-xs text-slate-400">
-                  Universal non-invasive clip-on retrofit designed for manual knapsack (16L) and motorized mist-blowers widely used in Assam tea estates.
+                <p className="text-xs text-slate-500">
+                  Pre-configured with TRA Plant Protection Code norms to eliminate manual mixing errors and prevent MRL violations.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-xs text-emerald-400 font-semibold uppercase">Microcontroller</span>
-                  <div className="text-base font-bold text-slate-100">ESP32-S3 Dual-Core</div>
-                  <p className="text-xs text-slate-400">240 MHz, low-power BLE 5.0 mesh, LoRa SX1262 long-range transceiver (3-5 km canopy penetration).</p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Inputs */}
+                <div className="lg:col-span-1 bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase">Target Pest / Disease</label>
+                    <select 
+                      value={selectedPest}
+                      onChange={e => setSelectedPest(e.target.value)}
+                      className="mt-1.5 w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <option value="helopeltis">Tea Mosquito Bug (Helopeltis)</option>
+                      <option value="red_spider">Red Spider Mite</option>
+                      <option value="blister_blight">Blister Blight (Fungus)</option>
+                      <option value="looper">Tea Looper Caterpillar</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase">Section Area to Treat (Hectares)</label>
+                    <input 
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      value={targetHectares}
+                      onChange={e => setTargetHectares(parseFloat(e.target.value) || 0.1)}
+                      className="mt-1.5 w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase">Knapsack Tank Capacity</label>
+                    <div className="mt-1.5 grid grid-cols-3 gap-2">
+                      {[16, 20, 12].map(cap => (
+                        <button
+                          key={cap}
+                          onClick={() => setKnapsackCapacity(cap)}
+                          className={`py-2 rounded-xl text-xs font-bold border transition ${
+                            knapsackCapacity === cap 
+                              ? 'bg-emerald-600 border-emerald-600 text-white' 
+                              : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          {cap} Litres
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-xs text-teal-400 font-semibold uppercase">GNSS Positioning</span>
-                  <div className="text-base font-bold text-slate-100">Multi-Constellation GNSS</div>
-                  <p className="text-xs text-slate-400">GPS + NavIC (Indian Constellation) + GLONASS with dead-reckoning IMU integration for shaded tea canopies.</p>
-                </div>
+                {/* Calculation Results */}
+                <div className="lg:col-span-2 bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start border-b border-slate-200 pb-3">
+                      <div>
+                        <div className="text-sm font-bold text-slate-900">{currentPest.name}</div>
+                        <div className="text-xs text-emerald-700 font-semibold mt-0.5">Approved Active: {currentPest.chemical}</div>
+                      </div>
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">
+                        PHI: {currentPest.phiDays} Days Safe Plucking
+                      </span>
+                    </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-xs text-amber-400 font-semibold uppercase">Power & Battery</span>
-                  <div className="text-base font-bold text-slate-100">3200 mAh LiFePO4</div>
-                  <p className="text-xs text-slate-400">Safe, non-combustible chemistry. 18+ hours operational run-time on single shift charge with solar top-up option.</p>
-                </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="bg-white p-3 rounded-xl border border-slate-200">
+                        <span className="text-slate-500">Total Spray Mix</span>
+                        <div className="text-lg font-bold font-mono text-slate-900 mt-1">{requiredTotalSolution} L</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-slate-200">
+                        <span className="text-slate-500">Tank Refills</span>
+                        <div className="text-lg font-bold font-mono text-emerald-700 mt-1">{tanksNeeded} Tanks</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-slate-200">
+                        <span className="text-slate-500">Dose / Tank</span>
+                        <div className="text-lg font-bold font-mono text-teal-700 mt-1">{chemicalPerTank} g/mL</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-slate-200">
+                        <span className="text-slate-500">Total Chemical</span>
+                        <div className="text-lg font-bold font-mono text-blue-700 mt-1">{totalChemicalRequired} g/mL</div>
+                      </div>
+                    </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-xs text-purple-400 font-semibold uppercase">Enclosure & Durability</span>
-                  <div className="text-base font-bold text-slate-100">IP67 Chemical-Proof</div>
-                  <p className="text-xs text-slate-400">Corrosion-resistant UV-stabilized polycarbonate housing withstands high humidity, monsoon rain, and agrochemical exposure.</p>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-600 leading-relaxed">
+                      <span className="font-bold text-slate-900">Standard Operating Instruction:</span> Add 5 Litres of clean water to the {knapsackCapacity}L knapsack, dissolve exactly {chemicalPerTank} g/mL of {currentPest.chemical}, agitate thoroughly, and fill water up to the {knapsackCapacity}L mark. Maintain walking pace of 2.2 km/h.
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => alert(`Mixing recipe logged in Estate Ledger: ${tanksNeeded} tanks of ${currentPest.chemical} for Section 4C`)}
+                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-sm"
+                  >
+                    Lock Recipe to Sirdar QR Dispatch
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* TAB 5: NESFIC-I-06 PROPOSAL DOSSIER */}
-        {activeTab === 'proposal' && (
+        {/* TAB 4: WSP DROPLET SCANNER */}
+        {activeTab === 'wsp' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-emerald-400" />
-                    Government of Assam · NESFIC 2026 Proposal Reference
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Challenge Code: NESFIC-I-06 · Partner: Tea Research Association (TRA) Tocklai
-                  </p>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Scan className="w-5 h-5 text-emerald-600" />
+                  Water-Sensitive Paper (WSP) Droplet Density Scanner
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Simulates in-field optical analysis of exposed yellow card strips to evaluate droplet coverage (target 30–50 droplets/cm²).
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                {/* Simulated WSP Card */}
+                <div className="bg-amber-100 border-2 border-amber-300 rounded-2xl p-6 h-64 flex flex-col justify-between relative overflow-hidden shadow-inner">
+                  <div className="flex justify-between items-center text-xs font-mono font-bold text-amber-900">
+                    <span>WSP CARD #24 (Upper Canopy Table)</span>
+                    <span className="bg-amber-200 px-2 py-0.5 rounded">2026-11-23</span>
+                  </div>
+
+                  {/* Simulated Blue Droplet Splashes */}
+                  <div className="relative flex-1 flex items-center justify-center">
+                    <div className="absolute inset-0 flex flex-wrap gap-3 items-center justify-center p-4 opacity-80 pointer-events-none">
+                      {Array.from({ length: 38 }).map((_, i) => (
+                        <div 
+                          key={i} 
+                          className="bg-blue-900 rounded-full"
+                          style={{
+                            width: `${4 + (i % 5) * 2}px`,
+                            height: `${4 + (i % 5) * 2}px`,
+                            margin: `${(i * 3) % 8}px`
+                          }}
+                        ></div>
+                      ))}
+                    </div>
+                    <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-center shadow-md border border-amber-200 z-10">
+                      <div className="font-extrabold text-xl font-mono text-blue-900">42 Droplets / cm²</div>
+                      <div className="text-[11px] text-emerald-700 font-bold">Optimal TRA Category Grade A</div>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-amber-800 font-mono text-center">
+                    Volume Median Diameter (VMD): 185 µm · Coverage: 14.8%
+                  </div>
                 </div>
-                <div className="text-xs bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
-                  All 12 Proposal Sections Formatted Below
+
+                {/* Computer Vision Metrics */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-900">Optical Quality Diagnostics</h3>
+                  <div className="space-y-2.5 text-xs">
+                    <div className="flex justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-slate-600 font-medium">Droplet Density (Target 30–50/cm²)</span>
+                      <span className="font-mono font-bold text-emerald-700">42 / cm² (Pass)</span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-slate-600 font-medium">Drift Index (&lt;100 µm droplets)</span>
+                      <span className="font-mono font-bold text-teal-700">4.2% (Minimal drift)</span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-slate-600 font-medium">Canopy Penetration Ratio (Top / Bottom)</span>
+                      <span className="font-mono font-bold text-slate-800">1 : 0.72 (Excellent)</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => alert('WSP Card calibrated against field knapsack flow')}
+                    className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-sm"
+                  >
+                    Upload New Card Image for AI Segmentation
+                  </button>
                 </div>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                The complete proposal text generated below has been calibrated to conform strictly to the NESFIC 2026 evaluation framework and character limits (under 500 words per section). You can review all sections in the chat window, copy-paste directly into the portal fields, and submit with the accompanying Proof of Work documentation.
-              </p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: MRL & AUDIT CERTIFICATE */}
+        {activeTab === 'compliance' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-emerald-600" />
+                  Tea Research Association (TRA) Tocklai & FSSAI MRL Compliance
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Pre-harvest interval (PHI) enforcement, chemical traceability, and European Union / FSSAI maximum residue limit safeguards.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Active Spray Schedule */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                  <h3 className="text-sm font-bold text-emerald-700">Chemical Protocol in Action</h3>
+                  <div className="space-y-2.5 text-xs">
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Target Pest / Disease</span>
+                      <span className="text-slate-900 font-semibold">Tea Mosquito Bug (Helopeltis)</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Approved Chemical Formulation</span>
+                      <span className="text-slate-900 font-semibold">Thiamethoxam 25% WG (TRA Approved)</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Prescribed TRA Dose</span>
+                      <span className="text-emerald-700 font-mono font-bold">100g / 400L water per Hectare</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Pre-Harvest Interval (PHI)</span>
+                      <span className="text-amber-800 font-semibold">7 Days Plucking Prohibition</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Safe Plucking Date</span>
+                      <span className="text-emerald-700 font-mono font-bold">30 Nov 2026 (Locked in ERP)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Audit Certificate Generation */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-teal-800">Export & Factory Audit Log</h3>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Automatically generates cryptographically signed spray logs for Tea Board of India and export buyers (EU, UK, USA) to verify residue safety.
+                    </p>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs space-y-1 font-mono text-slate-700">
+                    <div>BATCH_ID: TR-2026-JOR-SEC4C</div>
+                    <div>HASH: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1f</div>
+                    <div className="text-emerald-700 font-bold">STATUS: FSSAI_VERIFIED_PASS</div>
+                  </div>
+                  <button 
+                    onClick={() => setShowCertificateModal(true)}
+                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition shadow-sm"
+                  >
+                    <Award className="w-4 h-4" /> View & Print TRA Audit Certificate
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: IOT RETROFIT KIT SPEC */}
+        {activeTab === 'hardware' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Cpu className="w-5 h-5 text-emerald-600" />
+                  Hardware Retrofit Specifications & Edge Computing
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Universal non-invasive clip-on retrofit designed for manual knapsack (16L) and motorized mist-blowers widely used in Assam tea estates.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+                  <span className="text-xs text-emerald-700 font-bold uppercase">Microcontroller</span>
+                  <div className="text-base font-bold text-slate-900">ESP32-S3 Dual-Core</div>
+                  <p className="text-xs text-slate-600">240 MHz, low-power BLE 5.0 mesh, LoRa SX1262 long-range transceiver (3-5 km canopy penetration).</p>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+                  <span className="text-xs text-teal-700 font-bold uppercase">GNSS Positioning</span>
+                  <div className="text-base font-bold text-slate-900">Multi-Constellation GNSS</div>
+                  <p className="text-xs text-slate-600">GPS + NavIC (Indian Constellation) + GLONASS with dead-reckoning IMU integration for shaded tea canopies.</p>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+                  <span className="text-xs text-amber-700 font-bold uppercase">Power & Battery</span>
+                  <div className="text-base font-bold text-slate-900">3200 mAh LiFePO4</div>
+                  <p className="text-xs text-slate-600">Safe, non-combustible chemistry. 18+ hours operational run-time on single shift charge with solar top-up option.</p>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+                  <span className="text-xs text-purple-700 font-bold uppercase">Enclosure & Durability</span>
+                  <div className="text-base font-bold text-slate-900">IP67 Chemical-Proof</div>
+                  <p className="text-xs text-slate-600">Corrosion-resistant UV-stabilized polycarbonate housing withstands high humidity, monsoon rain, and agrochemical exposure.</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
       </main>
 
+      {/* MODAL: TRA TOCKLAI AUDIT CERTIFICATE */}
+      {showCertificateModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white max-w-2xl w-full rounded-2xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setShowCertificateModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Certificate Header */}
+            <div className="text-center border-b-2 border-emerald-600 pb-4 space-y-1">
+              <div className="text-xs font-bold uppercase tracking-widest text-emerald-700">Official Compliance Certificate</div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">TEA RESEARCH ASSOCIATION (TRA) TOCKLAI</h1>
+              <p className="text-xs text-slate-500">Plant Protection Code (PPC) & FSSAI MRL Verification Record</p>
+            </div>
+
+            {/* Certificate Body */}
+            <div className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div>
+                  <span className="text-slate-500">Estate & Division:</span>
+                  <div className="font-bold text-slate-900">Jorhat Tea Estate · Block 4C</div>
+                </div>
+                <div>
+                  <span className="text-slate-500">Certificate No:</span>
+                  <div className="font-mono font-bold text-slate-900">TRA-NESFIC-2026-0892</div>
+                </div>
+                <div>
+                  <span className="text-slate-500">Treated Clonal Bush:</span>
+                  <div className="font-bold text-slate-900">TV-1 Mature Bush (12.6 Hectares)</div>
+                </div>
+                <div>
+                  <span className="text-slate-500">Application Date:</span>
+                  <div className="font-mono font-bold text-slate-900">23 November 2026</div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="font-bold text-slate-900 uppercase">Audit Verified Parameters:</span>
+                <table className="w-full text-left border border-slate-200 rounded-lg overflow-hidden">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold">
+                    <tr>
+                      <th className="p-2">Metric</th>
+                      <th className="p-2">Measured</th>
+                      <th className="p-2">TRA Guideline</th>
+                      <th className="p-2">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    <tr>
+                      <td className="p-2">Average Spray Volume</td>
+                      <td className="p-2 font-mono">422 L/ha</td>
+                      <td className="p-2">400 - 450 L/ha</td>
+                      <td className="p-2 text-emerald-700 font-bold">Compliant</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2">Coverage Uniformity</td>
+                      <td className="p-2 font-mono">94.2%</td>
+                      <td className="p-2">&gt;85.0%</td>
+                      <td className="p-2 text-emerald-700 font-bold">Grade A</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2">Pre-Harvest Interval (PHI)</td>
+                      <td className="p-2 font-mono">7 Days</td>
+                      <td className="p-2">7 Days Min</td>
+                      <td className="p-2 text-emerald-700 font-bold">Locked</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-[11px]">
+                <span className="font-bold">Cryptographic Validation:</span> Signed with SHA-256 telemetry hash. Authorized for EU/UK/FSSAI export tea consignment clearance.
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={() => window.print()}
+                className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center justify-center gap-2 transition"
+              >
+                <Printer className="w-4 h-4" /> Print Certificate
+              </button>
+              <button 
+                onClick={() => setShowCertificateModal(false)}
+                className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 px-6 py-4 text-xs text-slate-500 flex flex-wrap justify-between items-center gap-2">
+      <footer className="border-t border-slate-200 bg-white px-6 py-4 text-xs text-slate-500 flex flex-wrap justify-between items-center gap-2 shadow-sm">
         <div>ChaiRakshak IoT Platform · Developed for Assam Innovation & Startup Foundation (AISF) · NESFIC 2026</div>
         <div className="flex items-center gap-3">
-          <span className="text-emerald-500 flex items-center gap-1">● Dev Server Active (Port 5173)</span>
-          <span>Version 1.0.0-MVP</span>
+          <span className="text-emerald-600 font-medium flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-600"></span> Dev Server Active (Port 5177)
+          </span>
+          <span>Version 1.2.0-MVP</span>
         </div>
       </footer>
     </div>
