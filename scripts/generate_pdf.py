@@ -364,7 +364,7 @@ def build_pdf(filename):
             "<b>Cost Differentiation:</b> While agricultural drones cost ₹6,00,000–₹10,00,000, ChaiRakshak delivers a precision retrofit at <₹6,500 per unit, democratizing precision agriculture for estates and small tea growers alike."
         ]),
         ("12. Resources, Risks & Pilot Validation", [
-            "<b>Resource Drivers & Indicative Cost Structure:</b> Hardware BOM per kit at 100-unit scale is ~₹4,850 ($58 USD), consisting of ESP32-S3, ultrasonic transducer pair, NavIC GNSS, LiFePO4 battery, 6-axis IMU, ERM haptic motor, and IP67 enclosure. Tooling and PCB fabrication runs: ₹1,20,000; Pilot field expenses: ₹95,000 for travel, accommodation, WSP cards, and operator training incentives.",
+            "<b>Indicative Resource & Budget Allocation (₹40.00 Lakhs Problem Statement Grant):</b> The total NESFIC-I-06 grant of ₹40,00,000 is structured to prioritize core deep-tech engineering while optimizing hardware fabrication and field validation costs: (1) <i>Technical Engineering Team Cost:</i> ₹20.00 Lakhs (50.0%) covering the 6-month multi-disciplinary team (Lead Architect, Embedded Hardware & Firmware, RF/LoRaWAN, Full-Stack GIS, Tea Agronomist, Field QA); (2) <i>Hardware Prototyping, Sensors & Pilot Batch (100 Kits + Gateways):</i> ₹7.50 Lakhs (18.75%); (3) <i>Mechanical Tooling & IP67 Enclosure Fabrication:</i> ₹4.00 Lakhs (10.0%); (4) <i>Field Pilot Validation & TRA Tocklai Trials (50 Ha):</i> ₹4.00 Lakhs (10.0%); (5) <i>Cloud Infrastructure, IP Filings & Regulatory Certifications:</i> ₹2.50 Lakhs (6.25%); (6) <i>Contingency & Operational Reserve:</i> ₹2.00 Lakhs (5.0%).",
             "<b>Key Risks & Mitigations:</b><br/>"
             "• <i>Corrosive Agrochemicals:</i> Mitigated by using UV-stabilized, chemical-resistant polycarbonate housing with fluoroelastomer (FKM) chemical-proof seals; non-contact ultrasonic sensor eliminates fluid contact.<br/>"
             "• <i>Dense Shade Canopy GNSS Loss:</i> Mitigated by implementing 6-axis IMU dead-reckoning fusion to interpolate position during temporary GNSS lockouts.<br/>"
@@ -398,6 +398,30 @@ def build_pdf(filename):
         if prefix in section_figures:
             for fname, cap in section_figures[prefix]:
                 add_figure(fname, cap)
+        if prefix == "12.":
+            story.append(Spacer(1, 6))
+            story.append(Paragraph("Indicative Resource & Budget Allocation (₹40.00 Lakhs Grant)", h2_style))
+            budget_data = [
+                [Paragraph("Budget Head", table_header), Paragraph("Scope & Deliverables", table_header), Paragraph("Allocation", table_header), Paragraph("Share", table_header)],
+                [Paragraph("<b>Technical Engineering Team Cost</b>", table_cell), Paragraph("6-month multi-disciplinary team (Lead Architect, Embedded/Firmware, RF/LoRa, Cloud/GIS, Tea Agronomist, Field QA)", table_cell), Paragraph("<b>₹20.00 Lakhs</b>", table_cell), Paragraph("<b>50.0%</b>", table_cell)],
+                [Paragraph("Hardware Prototyping & Pilot Batch", table_cell), Paragraph("100 retrofit kits (ESP32-S3, piezo ultrasonic, NavIC, IMU, LiFePO4), solar LoRaWAN gateways, PCB runs", table_cell), Paragraph("₹7.50 Lakhs", table_cell), Paragraph("18.75%", table_cell)],
+                [Paragraph("Mechanical Tooling & IP67 Enclosures", table_cell), Paragraph("Rapid injection-mold tooling, UV-polycarbonate housings, FKM chemical seals, universal lance clamps", table_cell), Paragraph("₹4.00 Lakhs", table_cell), Paragraph("10.0%", table_cell)],
+                [Paragraph("Field Pilot Validation (TRA Tocklai)", table_cell), Paragraph("50-hectare Assam trials, Water-Sensitive Paper (WSP) consumables, operator workshops (Sadri/Assamese), logistics", table_cell), Paragraph("₹4.00 Lakhs", table_cell), Paragraph("10.0%", table_cell)],
+                [Paragraph("Cloud, IP & Regulatory Compliance", table_cell), Paragraph("AWS/PostGIS hosting, WPC 865 MHz & IP67 lab certifications, provisional patents, FSSAI/TRA audit tooling", table_cell), Paragraph("₹2.50 Lakhs", table_cell), Paragraph("6.25%", table_cell)],
+                [Paragraph("Contingency & Operational Reserve", table_cell), Paragraph("Component lead-time buffers, monsoon trial rescheduling, and field replacement spares", table_cell), Paragraph("₹2.00 Lakhs", table_cell), Paragraph("5.0%", table_cell)],
+                [Paragraph("<b>Total Problem Statement Grant</b>", table_cell), Paragraph("<b>Complete 6-Month TRL-7 Execution & Validation</b>", table_cell), Paragraph("<b>₹40.00 Lakhs</b>", table_cell), Paragraph("<b>100.0%</b>", table_cell)]
+            ]
+            t_budget = Table(budget_data, colWidths=[130, 220, 75, 60])
+            t_budget.setStyle(TableStyle([
+                ('BACKGROUND', (0,0), (-1,0), primary),
+                ('GRID', (0,0), (-1,-1), 0.5, border_c),
+                ('ROWBACKGROUNDS', (0,1), (-1,-2), [colors.white, bg_light]),
+                ('BACKGROUND', (0,1), (-1,1), colors.HexColor("#ecfdf5")),
+                ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#e2e8f0")),
+                ('TOPPADDING', (0,0), (-1,-1), 4),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+            ]))
+            story.append(t_budget)
         story.append(Spacer(1, 8))
 
     # ================= PROOF OF WORK / TECHNICAL ANNEXURES =================

@@ -984,7 +984,7 @@ export default function App() {
                   { n: "09", t: "Testing, Validation & Evidence", d: "±1.42% flow accuracy in copper slurries, 94.2% swath uniformity, and 98.4% LoRa packet delivery." },
                   { n: "10", t: "Security, Safety & Compliance", d: "128-bit AES telemetry encryption, SHA-256 immutable spray ledger, and FSSAI/EU MRL compliance." },
                   { n: "11", t: "Innovation & Differentiation", d: "Non-contact ultrasonic clamp vs impeller clogging; eyes-free haptics vs distracting mobile screens." },
-                  { n: "12", t: "Resources, Risks & Validation", d: "₹4,850 unit BOM; mitigations for pesticide corrosion, dense canopy GNSS loss, and worker adoption." }
+                  { n: "12", t: "Resources, Risks & Validation", d: "₹40.00 Lakhs grant (₹20.00L Technical Engineering Team + ₹20.00L Hardware, Tooling, Trials, IP & Reserve)." }
                 ].map(item => (
                   <div key={item.n} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-50 transition space-y-1">
                     <div className="flex items-center gap-2">
@@ -992,6 +992,46 @@ export default function App() {
                       <span className="font-bold text-slate-900">{item.t}</span>
                     </div>
                     <p className="text-slate-600 text-[11px] leading-relaxed pl-7">{item.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Indicative Resource & Budget Allocation (40 Lakhs Grant) */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Indicative Resource & Budget Allocation (₹40.00 Lakhs Grant)</h3>
+                  <p className="text-xs text-slate-500">Structured 6-month NESFIC-I-06 grant utilization prioritizing deep-tech engineering and Assam field trials.</p>
+                </div>
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Total Grant: ₹40.00 Lakhs
+                </span>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {[
+                  { head: "Technical Engineering Team Cost", scope: "6-month multi-disciplinary team (Lead Architect, Embedded/Firmware, RF/LoRa, Cloud/GIS, Tea Agronomist, Field QA)", amount: "₹20.00 Lakhs", pct: 50, color: "bg-emerald-600", highlight: true },
+                  { head: "Hardware Prototyping & Pilot Batch (100 Kits)", scope: "ESP32-S3, piezo ultrasonic sensors, NavIC GNSS, 6-axis IMU, LiFePO4 batteries, solar LoRaWAN gateways, PCB runs", amount: "₹7.50 Lakhs", pct: 18.75, color: "bg-teal-600" },
+                  { head: "Mechanical Tooling & IP67 Enclosures", scope: "Rapid injection-mold tooling, UV-polycarbonate housings, FKM chemical seals, universal lance clamps", amount: "₹4.00 Lakhs", pct: 10, color: "bg-cyan-600" },
+                  { head: "Field Pilot Validation (TRA Tocklai)", scope: "50-hectare Assam trials, Water-Sensitive Paper (WSP) consumables, operator workshops (Sadri/Assamese), logistics", amount: "₹4.00 Lakhs", pct: 10, color: "bg-blue-600" },
+                  { head: "Cloud, IP & Regulatory Compliance", scope: "AWS/PostGIS hosting, WPC 865 MHz & IP67 lab certifications, provisional patents, FSSAI/TRA audit tooling", amount: "₹2.50 Lakhs", pct: 6.25, color: "bg-indigo-600" },
+                  { head: "Contingency & Operational Reserve", scope: "Component lead-time buffers, monsoon trial rescheduling, and field replacement spares", amount: "₹2.00 Lakhs", pct: 5, color: "bg-slate-500" }
+                ].map((row, idx) => (
+                  <div key={idx} className={`p-3.5 rounded-xl border ${row.highlight ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50 border-slate-200'} space-y-2`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <span className="font-bold text-slate-900">{row.head}</span>
+                        <p className="text-[11px] text-slate-500 mt-0.5">{row.scope}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-mono font-extrabold text-sm text-slate-900">{row.amount}</span>
+                        <span className="ml-2 text-[11px] font-mono font-semibold text-emerald-700">({row.pct}%)</span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div className={`${row.color} h-full rounded-full`} style={{ width: `${row.pct}%` }}></div>
+                    </div>
                   </div>
                 ))}
               </div>
