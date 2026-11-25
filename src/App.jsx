@@ -7,14 +7,106 @@ import {
   Printer, X, Calculator, Scan, Volume2, CloudRain, Sun, Award, BookOpen
 } from 'lucide-react';
 
+const BASE_URL = 'https://teaguard-spray-monitor.pages.dev';
+
+const ROUTES = {
+  dashboard: {
+    slug: '/assam-tea-spray-monitoring-live-map',
+    title: 'ChaiRakshak | Assam Tea Spray Monitoring Live Map (NESFIC-I-06) | Rojes Labs',
+    desc: 'Real-time spatial swath coverage map for manual knapsack sprayers in Jorhat, Assam tea plantations. TRA Tocklai 400-450 L/ha compliant.'
+  },
+  telemetry: {
+    slug: '/lance-kinematics-haptic-telemetry',
+    title: 'Lance Kinematics & Haptic Telemetry | ChaiRakshak Tea Spray IoT - Assam',
+    desc: 'Ultrasonic transit-time flow sensing, 6-axis IMU lance angle tracking, and eyes-free haptic pacing feedback for Assam tea garden operators.'
+  },
+  calculator: {
+    slug: '/tra-tocklai-chemical-dosage-calculator',
+    title: 'TRA Tocklai Chemical & Knapsack Tank Calculator | ChaiRakshak Assam',
+    desc: 'Automated TRA Tocklai Plant Protection Code dilution calculator for Tea Mosquito Bug, Red Spider Mite, Blister Blight, and Looper in Assam.'
+  },
+  wsp: {
+    slug: '/wsp-droplet-deposition-scanner-assam',
+    title: 'WSP Droplet Deposition Scanner | ChaiRakshak Agronomic Validation - Jorhat',
+    desc: 'Water-Sensitive Paper (WSP) optical droplet density diagnostics (42 droplets/cm2, 185 um VMD) for Assam and Dooars tea estates.'
+  },
+  compliance: {
+    slug: '/fssai-mrl-tea-export-audit-certificate',
+    title: 'FSSAI & EU Export MRL Audit Certificate | ChaiRakshak TeaTech - Assam',
+    desc: 'Pre-Harvest Interval (PHI) enforcement and SHA-256 signed TRA Tocklai compliance certificates for Assam export tea consignments.'
+  },
+  hardware: {
+    slug: '/iot-knapsack-retrofit-hardware-specs',
+    title: '172g IoT Knapsack Retrofit Kit Specs | ChaiRakshak Hardware - Rojes Labs',
+    desc: 'Universal ESP32-S3, NavIC/GPS, LoRaWAN 865 MHz, and IP67 chemical-proof retrofit kit engineered by Rojes Labs in Jorhat, Assam.'
+  },
+  proposal: {
+    slug: '/nesfic-i06-proposal-proof-of-work-assam',
+    title: 'NESFIC-I-06 Proposal & Proof of Work (PoW) | Rojes Labs - Pratibha Das Hatibaruah',
+    desc: 'Official NESFIC-I-06 proposal, Rs. 40 Lakhs grant allocation, 16:9 engineering infographics, and downloadable PDFs by Rojes Labs.'
+  },
+  tutorial: {
+    slug: '/tutorial-how-to-use-chairakshak',
+    title: 'Tutorial: How to Use ChaiRakshak Smart Spray Monitoring | Rojes Labs',
+    desc: 'Step-by-step interactive user guide explaining what ChaiRakshak does and how to operate every module for Assam tea plantations.'
+  }
+};
+
+function getTabFromPath(pathname) {
+  const clean = pathname.replace(/\/+$/, '') || '/';
+  if (clean === '/') return { tab: 'dashboard', tutorial: false };
+  if (clean === ROUTES.tutorial.slug) return { tab: 'dashboard', tutorial: true };
+  for (const [key, val] of Object.entries(ROUTES)) {
+    if (key !== 'tutorial' && val.slug === clean) {
+      return { tab: key, tutorial: false };
+    }
+  }
+  return { tab: 'dashboard', tutorial: false };
+}
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const initialRoute = typeof window !== 'undefined' ? getTabFromPath(window.location.pathname) : { tab: 'dashboard', tutorial: false };
+  const [activeTab, setActiveTab] = useState(initialRoute.tab);
   const [isSimulating, setIsSimulating] = useState(true);
   const [selectedOperator, setSelectedOperator] = useState('OP-104');
   const [showCertificateModal, setShowCertificateModal] = useState(false);
-  const [showTutorialModal, setShowTutorialModal] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(initialRoute.tutorial);
   const [selectedInfographic, setSelectedInfographic] = useState(null);
   const [hapticFeedbackAlert, setHapticFeedbackAlert] = useState(null);
+
+  const navigateTo = (tabId, openTutorial = false) => {
+    const route = openTutorial ? ROUTES.tutorial : (ROUTES[tabId] || ROUTES.dashboard);
+    if (openTutorial) {
+      setShowTutorialModal(true);
+    } else {
+      setShowTutorialModal(false);
+      setActiveTab(tabId);
+    }
+    if (typeof window !== 'undefined' && window.location.pathname !== route.slug) {
+      window.history.pushState({ tabId, openTutorial }, '', route.slug);
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const parsed = getTabFromPath(window.location.pathname);
+      setActiveTab(parsed.tab);
+      setShowTutorialModal(parsed.tutorial);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    const route = showTutorialModal ? ROUTES.tutorial : (ROUTES[activeTab] || ROUTES.dashboard);
+    document.title = route.title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', route.desc);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', `${BASE_URL}${route.slug}`);
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', `${BASE_URL}${route.slug}`);
+  }, [activeTab, showTutorialModal]);
 
   // Chemical Calculator State
   const [selectedPest, setSelectedPest] = useState('helopeltis');
@@ -171,14 +263,19 @@ export default function App() {
         {/* Global Estate Status */}
         <div className="flex items-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm">
           {/* Tutorial / How to Use Link */}
-          <button
-            onClick={() => setShowTutorialModal(true)}
+          <a
+            href={ROUTES.tutorial.slug}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateTo(activeTab, true);
+            }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 transition shadow-sm"
-            title="Learn what ChaiRakshak does and how to use it"
+            title="Tutorial: Learn what ChaiRakshak does and how to use it for Assam tea spray monitoring"
+            aria-label="Tutorial: How to use ChaiRakshak Smart Spray Monitoring Platform"
           >
             <BookOpen className="w-3.5 h-3.5 text-blue-600" />
             <span>Tutorial</span>
-          </button>
+          </a>
 
           {/* Lead Applicant & Organization Pill */}
           <div className="hidden xl:flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
@@ -239,7 +336,7 @@ export default function App() {
       </header>
 
       {/* Navigation Bar */}
-      <div className="border-b border-slate-200 bg-white px-6 flex space-x-6 text-sm overflow-x-auto shadow-sm">
+      <nav aria-label="Primary Platform Sections" className="border-b border-slate-200 bg-white px-6 flex space-x-6 text-sm overflow-x-auto shadow-sm">
         {[
           { id: 'dashboard', label: 'Field Operations Live Map', icon: Activity },
           { id: 'telemetry', label: 'Lance Kinematics & Haptics', icon: Gauge },
@@ -251,10 +348,17 @@ export default function App() {
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
+          const route = ROUTES[tab.id];
           return (
-            <button
+            <a
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              href={route.slug}
+              title={route.title}
+              aria-current={isActive ? 'page' : undefined}
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo(tab.id);
+              }}
               className={`flex items-center gap-2 py-3.5 border-b-2 font-medium transition whitespace-nowrap text-xs sm:text-sm ${
                 isActive 
                   ? 'border-emerald-600 text-emerald-700 font-semibold' 
@@ -262,11 +366,11 @@ export default function App() {
               }`}
             >
               <Icon className="w-4 h-4" />
-              {tab.label}
-            </button>
+              <span>{tab.label}</span>
+            </a>
           );
         })}
-      </div>
+      </nav>
 
       {/* Active Haptic Alert Floating Pill */}
       {hapticFeedbackAlert && (
@@ -1188,7 +1292,7 @@ export default function App() {
       {/* MODAL: INTERACTIVE APPLICATION TUTORIAL & USER GUIDE */}
       {showTutorialModal && (
         <div
-          onClick={() => setShowTutorialModal(false)}
+          onClick={() => navigateTo(activeTab, false)}
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
         >
           <div
@@ -1196,7 +1300,7 @@ export default function App() {
             className="bg-white max-w-3xl w-full rounded-2xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
           >
             <button
-              onClick={() => setShowTutorialModal(false)}
+              onClick={() => navigateTo(activeTab, false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
             >
               <X className="w-5 h-5" />
@@ -1252,16 +1356,18 @@ export default function App() {
                       <div className="font-bold text-slate-900">{item.step}</div>
                       <p className="text-slate-600 text-[11px] leading-relaxed">{item.desc}</p>
                     </div>
-                    <button
-                      onClick={() => {
-                        setActiveTab(item.tab);
-                        setShowTutorialModal(false);
+                    <a
+                      href={ROUTES[item.tab].slug}
+                      title={ROUTES[item.tab].title}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigateTo(item.tab, false);
                       }}
                       className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800"
                     >
-                      <span>Open this module</span>
+                      <span>Open {item.step.replace(/^\d+\.\s*/, '')}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
+                    </a>
                   </div>
                 ))}
               </div>
@@ -1269,7 +1375,7 @@ export default function App() {
 
             <div className="flex justify-end pt-2 border-t border-slate-200">
               <button
-                onClick={() => setShowTutorialModal(false)}
+                onClick={() => navigateTo(activeTab, false)}
                 className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-sm"
               >
                 Got It — Explore Dashboard
