@@ -12,6 +12,7 @@ export default function App() {
   const [isSimulating, setIsSimulating] = useState(true);
   const [selectedOperator, setSelectedOperator] = useState('OP-104');
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [selectedInfographic, setSelectedInfographic] = useState(null);
   const [hapticFeedbackAlert, setHapticFeedbackAlert] = useState(null);
 
   // Chemical Calculator State
@@ -1026,10 +1027,76 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* 16:9 Technological Framework Infographics Gallery */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">16:9 Technological Framework Infographics (Embedded in PDF)</h3>
+                  <p className="text-xs text-slate-500">Click any blueprint infographic to view full-screen.</p>
+                </div>
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  9 Visual Diagrams
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { src: "/assets/01_hero_chairakshak_overview.jpg", title: "Fig 1. System Architecture Overview" },
+                  { src: "/assets/02_knapsack_lance_retrofit.jpg", title: "Fig 2. 172g Lance Retrofit Exploded View" },
+                  { src: "/assets/03_daily_field_workflow.jpg", title: "Fig 3. 5-Stage Daily Field Workflow" },
+                  { src: "/assets/04_wsp_droplet_comparison.jpg", title: "Fig 4. WSP Droplet Deposition Benchmark" },
+                  { src: "/assets/05_ultrasonic_vs_impeller.jpg", title: "Fig 5. Ultrasonic vs Mechanical Impeller" },
+                  { src: "/assets/06_spatial_swath_heatmap.jpg", title: "Fig 6. Spatial Swath Heatmap (Sec 4C)" },
+                  { src: "/assets/07_kinematics_haptic_waveform.jpg", title: "Fig 7. Kinematics & Haptic Feedback" },
+                  { src: "/assets/08_offline_lorawan_architecture.jpg", title: "Fig 8. Offline LoRaWAN & BLE Mesh" },
+                  { src: "/assets/09_mrl_audit_compliance.jpg", title: "Fig 9. Cryptographic MRL Audit Ledger" }
+                ].map((fig, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedInfographic(fig)}
+                    className="group cursor-pointer rounded-xl border border-slate-200 bg-slate-50 overflow-hidden hover:border-emerald-400 hover:shadow-md transition"
+                  >
+                    <div className="aspect-video bg-slate-100 overflow-hidden">
+                      <img src={fig.src} alt={fig.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
+                    </div>
+                    <div className="p-2.5 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-800 truncate">{fig.title}</span>
+                      <Eye className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
       </main>
+
+      {/* LIGHTBOX MODAL FOR INFOGRAPHICS */}
+      {selectedInfographic && (
+        <div
+          onClick={() => setSelectedInfographic(null)}
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="bg-white max-w-5xl w-full rounded-2xl border border-slate-200 shadow-2xl overflow-hidden"
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+              <span className="font-bold text-sm text-slate-900">{selectedInfographic.title}</span>
+              <button
+                onClick={() => setSelectedInfographic(null)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="bg-slate-100 p-2">
+              <img src={selectedInfographic.src} alt={selectedInfographic.title} className="w-full h-auto rounded-lg" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: TRA TOCKLAI AUDIT CERTIFICATE */}
       {showCertificateModal && (

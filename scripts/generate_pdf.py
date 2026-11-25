@@ -2,7 +2,7 @@ import os
 import sys
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable, Image as RLImage
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
@@ -169,6 +169,41 @@ def build_pdf(filename):
     )
 
     story = []
+    assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "public", "assets")
+
+    caption_style = ParagraphStyle(
+        'FigCaption',
+        parent=styles['Normal'],
+        fontName='Helvetica-Oblique',
+        fontSize=8,
+        leading=11,
+        textColor=gray,
+        alignment=1,
+        spaceBefore=4,
+        spaceAfter=10
+    )
+
+    def add_figure(fname, caption_text):
+        fpath = os.path.join(assets_dir, fname)
+        if os.path.exists(fpath):
+            # 16:9 widescreen aspect ratio fitted to 480pt content width
+            img_w = 480
+            img_h = 270
+            rl_img = RLImage(fpath, width=img_w, height=img_h)
+            img_box = Table([[rl_img]], colWidths=[484])
+            img_box.setStyle(TableStyle([
+                ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#cbd5e1")),
+                ('BACKGROUND', (0,0), (-1,-1), colors.white),
+                ('TOPPADDING', (0,0), (-1,-1), 2),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+                ('LEFTPADDING', (0,0), (-1,-1), 2),
+                ('RIGHTPADDING', (0,0), (-1,-1), 2),
+            ]))
+            story.append(KeepTogether([
+                Spacer(1, 6),
+                img_box,
+                Paragraph(caption_text, caption_style)
+            ]))
 
     # ================= COVER / HEADER BANNER =================
     story.append(Paragraph("NORTH EAST SEVA FIRST INNOVATION CHALLENGE (NESFIC 2026)", ParagraphStyle(
@@ -226,7 +261,9 @@ def build_pdf(filename):
         ('BOTTOMPADDING', (0,0), (-1,-1), 8),
     ]))
     story.append(t_exec)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
+    add_figure("01_hero_chairakshak_overview.jpg", "Figure 1: ChaiRakshak System Overview — Four-Pillar IoT Retrofit Framework for Assam Tea Plantations (NESFIC-I-06)")
+    story.append(Spacer(1, 8))
 
     # ================= 12 PROPOSAL SECTIONS =================
 
@@ -337,11 +374,30 @@ def build_pdf(filename):
         ])
     ]
 
+    section_figures = {
+        "2.": [("02_knapsack_lance_retrofit.jpg", "Figure 2: Exploded View of the Universal 172g Non-Invasive Knapsack Lance Retrofit Module")],
+        "3.": [
+            ("03_daily_field_workflow.jpg", "Figure 3: 5-Stage Daily Tea Plantation Spraying User Journey & Pre-Harvest Interval Lockout"),
+            ("06_spatial_swath_heatmap.jpg", "Figure 4: Real-Time Spatial Swath Coverage Heatmap (Jorhat Section 4C Digital Twin)")
+        ],
+        "4.": [("08_offline_lorawan_architecture.jpg", "Figure 5: Offline-First Hybrid LoRaWAN (865 MHz) & BLE 5.0 Mesh Telemetry Architecture")],
+        "9.": [
+            ("04_wsp_droplet_comparison.jpg", "Figure 6: Water-Sensitive Paper (WSP) Droplet Deposition Benchmark — Unmonitored vs. ChaiRakshak Guided"),
+            ("07_kinematics_haptic_waveform.jpg", "Figure 7: Closed-Loop Lance Kinematics & Eyes-Free Haptic Pacing Feedback Waveforms")
+        ],
+        "10.": [("09_mrl_audit_compliance.jpg", "Figure 8: Cryptographic TRA Tocklai & FSSAI/EU Export MRL Compliance Ledger")],
+        "11.": [("05_ultrasonic_vs_impeller.jpg", "Figure 9: Non-Intrusive Ultrasonic Transit-Time Sensing vs. Clog-Prone Mechanical Impeller")]
+    }
+
     for title, paragraphs in sections:
         story.append(Paragraph(title, h1_style))
         story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
         for p in paragraphs:
             story.append(Paragraph(p, body_style))
+        prefix = title.split(" ")[0]
+        if prefix in section_figures:
+            for fname, cap in section_figures[prefix]:
+                add_figure(fname, cap)
         story.append(Spacer(1, 8))
 
     # ================= PROOF OF WORK / TECHNICAL ANNEXURES =================

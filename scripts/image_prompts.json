@@ -1,0 +1,65 @@
+[
+  {
+    "chapter": 1,
+    "section": "Cover & Overview",
+    "filename": "01_hero_chairakshak_overview.jpg",
+    "title": "ChaiRakshak: Smart Monitoring of Manual & Operator-Carried Spraying (NESFIC-I-06)",
+    "prompt": "A visionary 16:9 widescreen technological architectural infographic on a clean white and light-gray blueprint grid background illustrating CHAIRAKSHAK: SMART MONITORING OF MANUAL & OPERATOR-CARRIED SPRAYING IN ASSAM TEA PLANTATIONS (NESFIC-I-06). The header features bold dark navy typography with subtitle Precision Crop Protection & TRA Tocklai Compliance by TeaTech Labs. The visual centers on a stylized tea plantation knapsack sprayer connected to 4 crisp vector technology pillars: 1) Clamp-On Ultrasonic Flow Sensor (±1.42% accuracy); 2) 6-Axis Lance IMU Kinematics; 3) Eyes-Free Haptic Vibration Grip; 4) Offline-First LoRaWAN & NavIC Mesh. Includes metric badges: 400-450 L/ha TRA Norm, 22.8% Chemical Savings, 94.2% Uniformity, and 172g Ultralight Kit. Clean 2D flat vector aesthetic, deep navy, emerald green, cyan, and amber accents, ultra-sharp typography."
+  },
+  {
+    "chapter": 2,
+    "section": "Hardware Retrofit",
+    "filename": "02_knapsack_lance_retrofit.jpg",
+    "title": "Non-Invasive 172g Knapsack Lance Exploded Retrofit Architecture",
+    "prompt": "A structured 16:9 widescreen engineering diagram infographic on a clean white blueprint grid background illustrating NON-INVASIVE KNAPSACK LANCE RETROFIT ARCHITECTURE. The header displays bold dark navy text UNIVERSAL 172G CLIP-ON IOT MODULE FOR MANUAL SPRAYERS. The center shows a crisp exploded technical illustration of a standard 16L brass and polymer spray lance with 5 labeled callout components: 1) Piezo-Ceramic Ultrasonic Flow Ring (zero fluid contact); 2) InvenSense 6-Axis IMU (30-45cm canopy height & pitch); 3) Manifold Pressure Transducer (1-5 bar clog detection); 4) Ergonomic ERM Haptic Grip Sleeve; 5) IP67 Polycarbonate Collar housing ESP32-S3, NavIC/GPS, and 3200mAh LiFePO4 battery (18+ hrs runtime). Clean 2D flat vector engineering aesthetic, emerald green, cyan, amber, and navy palette."
+  },
+  {
+    "chapter": 3,
+    "section": "User Journey",
+    "filename": "03_daily_field_workflow.jpg",
+    "title": "5-Stage Daily Tea Plantation Spraying User Journey & PHI Lockout",
+    "prompt": "A clean 16:9 widescreen operational workflow infographic on a crisp white and light-gray blueprint grid background illustrating THE 5-STAGE DAILY TEA PLANTATION SPRAYING WORKFLOW. The header displays bold dark navy typography FROM MORNING MUSTER TO EXPORT MRL COMPLIANCE. Five connected color-coded stage cards flow left to right: 1) 6:30 AM Chemical QR Scan & Section 4C Assignment; 2) 7:00 AM In-Field Spraying with Eyes-Free Haptic Pacing (2.2 km/h); 3) 11:00 AM Automated 16L Tanker Refill Volume Logging; 4) 1:30 PM Muster Shed Auto-Sync via BLE Mesh & LoRaWAN; 5) Next 7 Days Automated Pre-Harvest Interval (PHI) Plucking Lockout in Estate ERP. Clean 2D flat vector aesthetic, crisp connecting arrows, emerald green, teal, cyan, and amber icons."
+  },
+  {
+    "chapter": 4,
+    "section": "Agronomic Validation",
+    "filename": "04_wsp_droplet_comparison.jpg",
+    "title": "Water-Sensitive Paper (WSP) Droplet Deposition: Unmonitored vs. ChaiRakshak Guided",
+    "prompt": "A high-impact 16:9 widescreen scientific comparison infographic on a clean white blueprint background illustrating WATER-SENSITIVE PAPER (WSP) DROPLET DEPOSITION BENCHMARK. The header features bold dark navy typography UNMONITORED MANUAL SPRAYING VS. CHAIRAKSHAK GUIDED PRECISION. Split into two diagnostic panels: LEFT PANEL (Amber/Red Warning): Unmonitored Manual Control showing patchy yellow WSP cards with 14 to 64 droplets/cm2, 52.4% uniformity, severe chemical runoff, and MRL breach risk; RIGHT PANEL (Emerald Green Verified): ChaiRakshak Guided showing uniform blue droplet mist at 42 droplets/cm2, 185 um VMD, 94.2% uniformity across Top Table, Middle Frame, and Lower Collar tea bush tiers. Clean 2D flat vector scientific aesthetic, crisp charts and metrics."
+  },
+  {
+    "chapter": 5,
+    "section": "Sensor Physics",
+    "filename": "05_ultrasonic_vs_impeller.jpg",
+    "title": "Non-Intrusive Ultrasonic Transit-Time Sensing vs. Mechanical Impeller",
+    "prompt": "A technical 16:9 widescreen engineering cutaway infographic on a clean white blueprint grid background illustrating ULTRASONIC TRANSIT-TIME SENSING VS. MECHANICAL IMPELLER METERS. The header displays bold dark navy text IMMUNITY TO CORROSIVE AGROCHEMICAL SLURRIES. Two side-by-side pipe cross-section diagrams: TOP/LEFT (Red Failure): Conventional Paddle-Wheel Impeller clogged and seized within 48 hours by Copper Oxychloride 50% WP wettable powder buildup; BOTTOM/RIGHT (Emerald/Cyan Success): ChaiRakshak Clamp-On Piezo Ultrasonic Transducer Pair mounted externally on pipe wall sending acoustic waves through liquid with zero fluid contact, zero pressure drop, and ±1.42% calibration accuracy. Clean 2D flat vector aesthetic, sharp engineering labels."
+  },
+  {
+    "chapter": 6,
+    "section": "Spatial GIS",
+    "filename": "06_spatial_swath_heatmap.jpg",
+    "title": "Real-Time Spatial Swath Coverage Heatmap (Jorhat Section 4C)",
+    "prompt": "A modern 16:9 widescreen GIS dashboard infographic on a clean white and light-gray blueprint background illustrating REAL-TIME SPATIAL SWATH COVERAGE HEATMAP (JORHAT SECTION 4C). The header displays bold dark navy typography DIGITAL TWIN OF TEA BUSH ROW SPRAYING. The center features a stylized aerial grid of tea plantation rows with color-coded spray tracks: Blue (<350 L/ha Under-Spray Risk), Emerald Green (400-450 L/ha Optimal TRA Norm), and Red (>500 L/ha Over-Spray Hotspot), alongside live operator GNSS+NavIC pins (OP-104, OP-108) and KPI badges: 78% Area Treated, 94.2% Uniformity Score, and 22.8% Chemical Savings. Clean 2D flat vector UI aesthetic, crisp typography."
+  },
+  {
+    "chapter": 7,
+    "section": "Kinematics & Haptics",
+    "filename": "07_kinematics_haptic_waveform.jpg",
+    "title": "Closed-Loop Lance Kinematics & Eyes-Free Haptic Pacing Feedback",
+    "prompt": "A precision 16:9 widescreen telemetry diagnostic infographic on a clean white blueprint grid background illustrating CLOSED-LOOP LANCE KINEMATICS & HAPTIC PACING. The header displays bold dark navy typography REAL-TIME SENSOR FUSION & EYES-FREE OPERATOR FEEDBACK. Features a dual-axis synchronized waveform chart plotting Walking Speed (km/h) and Flow Rate (mL/min) against optimal TRA bounds, plus 3 distinct haptic vibration callout cards: Pattern 1 (1 Pulse: Slow Down >2.8 km/h), Pattern 2 (2 Pulses: Speed Up <1.8 km/h), and Pattern 3 (3 Pulses: Nozzle Clog <2.0 bar or Lance Pitch >45 deg). Clean 2D flat vector aesthetic, emerald, cyan, and amber diagnostic badges."
+  },
+  {
+    "chapter": 8,
+    "section": "IoT Architecture",
+    "filename": "08_offline_lorawan_architecture.jpg",
+    "title": "Offline-First Hybrid LoRaWAN (865 MHz) & BLE 5.0 Mesh Architecture",
+    "prompt": "An authoritative 16:9 widescreen system architecture infographic on a clean white blueprint grid background illustrating OFFLINE-FIRST HYBRID LORAWAN & BLE MESH ARCHITECTURE. The header features bold dark navy typography RESILIENT TELEMETRY FOR ZERO-CELLULAR TEA ESTATES. Four-tier left-to-right architectural pipeline: 1) Edge Lance Node (ESP32-S3, Kalman Filter, 14-day SPI Flash offline buffer); 2) Dual Wireless Link (BLE 5.0 Mesh to Supervisor Android App & 865-867 MHz LoRaWAN 2.8km canopy link to Solar Factory Gateway); 3) Cloud & GIS Engine (FastAPI, PostgreSQL + PostGIS); 4) Estate Manager Dashboard & ERP Plucking Lockout. Clean 2D flat vector network diagram, navy, cyan, and emerald green."
+  },
+  {
+    "chapter": 9,
+    "section": "Compliance & Export",
+    "filename": "09_mrl_audit_compliance.jpg",
+    "title": "Cryptographic TRA Tocklai & FSSAI/EU Export MRL Compliance Ledger",
+    "prompt": "A formal 16:9 widescreen regulatory compliance infographic on a clean white blueprint background illustrating CRYPTOGRAPHIC TRA TOCKLAI & EXPORT MRL COMPLIANCE. The header displays bold dark navy typography TAMPER-PROOF TRACEABILITY FOR ASSAM EXPORT TEA. Visualizes four interconnected security & audit pillars: 1) 128-Bit AES Edge-to-Cloud Telemetry Encryption; 2) SHA-256 Immutable Spray Batch Hashing; 3) Automated Pre-Harvest Interval (PHI) Plucking Lockout Calendar; 4) FSSAI Order 2024 & EU Regulation 396/2005 Export Certificate Badge. Clean 2D flat vector corporate aesthetic, emerald green, royal blue, and gold certification seal."
+  }
+]
