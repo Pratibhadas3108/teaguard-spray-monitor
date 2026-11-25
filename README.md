@@ -87,6 +87,6 @@ flowchart TD
 ---
 
 ## 📜 License & Attribution
-- **Organization:** TeaTech Labs (`© 2026 TeaTech Labs. All Rights Reserved.`)
-- **Lead Applicant:** Rangan Bhuyan
+- **Organization:** Rojes Labs (`© 2026 Rojes Labs. All Rights Reserved.`)
+- **Lead Applicant:** Pratibha Das Hatibaruah
 - **Challenge:** North East Seva First Innovation Challenge (NESFIC 2026) — Problem Statement `NESFIC-I-06`

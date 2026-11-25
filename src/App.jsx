@@ -171,9 +171,9 @@ export default function App() {
         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
           {/* Lead Applicant & Organization Pill */}
           <div className="hidden xl:flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
-            <span className="font-semibold text-slate-900">TeaTech Labs</span>
+            <span className="font-semibold text-slate-900">Rojes Labs</span>
             <span className="text-slate-400">·</span>
-            <span className="text-emerald-700 font-medium">Lead: Rangan Bhuyan</span>
+            <span className="text-emerald-700 font-medium">Lead: Pratibha Das Hatibaruah</span>
           </div>
 
           {/* Download PDFs */}
@@ -934,7 +934,7 @@ export default function App() {
                     ChaiRakshak: Proposal & Proof of Work Dossier
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
-                    Smart Monitoring of Manual / Operator-Carried Spraying in Assam & Dooars Tea Plantations. Prepared by <strong>TeaTech Labs</strong> · Lead Applicant: <strong>Rangan Bhuyan</strong>.
+                    Smart Monitoring of Manual / Operator-Carried Spraying in Assam & Dooars Tea Plantations. Prepared by <strong>Rojes Labs</strong> · Lead Applicant: <strong>Pratibha Das Hatibaruah</strong>.
                   </p>
                 </div>
 
@@ -962,11 +962,11 @@ export default function App() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10 text-xs">
                 <div>
                   <span className="text-slate-400">Submitting Entity:</span>
-                  <div className="font-bold text-white">TeaTech Labs</div>
+                  <div className="font-bold text-white">Rojes Labs</div>
                 </div>
                 <div>
                   <span className="text-slate-400">Lead Applicant:</span>
-                  <div className="font-bold text-emerald-300">Rangan Bhuyan</div>
+                  <div className="font-bold text-emerald-300">Pratibha Das Hatibaruah</div>
                 </div>
                 <div>
                   <span className="text-slate-400">Challenge Partner:</span>
@@ -1000,7 +1000,7 @@ export default function App() {
                   { n: "05", t: "Development Methodology", d: "6-phase stage-gate agile process from TRA Tocklai baselining to 50-hectare plantation trials." },
                   { n: "06", t: "Development Timeline", d: "6-month timeline to TRL-7 commercial validation across Upper Assam tea estates." },
                   { n: "07", t: "Data & Information Requirements", d: "High-frequency 50Hz kinematic IMU, WSP droplet imagery, and TRA Plant Protection Code norms." },
-                  { n: "08", t: "Team & Manpower Expertise", d: "Lead Applicant Rangan Bhuyan (IoT Architect), firmware engineers, RF specialists, and tea agronomists." },
+                  { n: "08", t: "Team & Manpower Expertise", d: "Lead Applicant Pratibha Das Hatibaruah (IoT Architect), firmware engineers, RF specialists, and tea agronomists." },
                   { n: "09", t: "Testing, Validation & Evidence", d: "±1.42% flow accuracy in copper slurries, 94.2% swath uniformity, and 98.4% LoRa packet delivery." },
                   { n: "10", t: "Security, Safety & Compliance", d: "128-bit AES telemetry encryption, SHA-256 immutable spray ledger, and FSSAI/EU MRL compliance." },
                   { n: "11", t: "Innovation & Differentiation", d: "Non-contact ultrasonic clamp vs impeller clogging; eyes-free haptics vs distracting mobile screens." },
@@ -1275,9 +1275,9 @@ export default function App() {
               ChaiRakshak is an IoT & Edge-AI precision spray monitoring and telemetry platform developed for manual and operator-carried knapsack sprayers across Assam and Dooars tea plantations. Built for the North East Seva First Innovation Challenge (NESFIC 2026), under the Assam Innovation & Startup Foundation (AISF), Department of Innovation, Incubation and Startups (DIIS), Govt. of Assam, in technical alignment with the Tea Research Association (TRA) Tocklai.
             </p>
             <div className="pt-1 flex flex-wrap items-center gap-3 text-[11px]">
-              <span className="font-semibold text-slate-800">Lead Applicant: <span className="text-emerald-700 font-bold">Rangan Bhuyan</span></span>
+              <span className="font-semibold text-slate-800">Lead Applicant: <span className="text-emerald-700 font-bold">Pratibha Das Hatibaruah</span></span>
               <span className="text-slate-300">|</span>
-              <span className="font-semibold text-slate-800">Organization: <span className="text-slate-900 font-bold">TeaTech Labs</span></span>
+              <span className="font-semibold text-slate-800">Organization: <span className="text-slate-900 font-bold">Rojes Labs</span></span>
               <span className="text-slate-300">|</span>
               <span className="text-slate-600">Problem Statement: <span className="font-mono text-emerald-700 font-semibold">NESFIC-I-06</span></span>
             </div>
@@ -1321,11 +1321,11 @@ export default function App() {
         <div className="border-t border-slate-200 bg-slate-50/80 px-6 py-4">
           <div className="max-w-7xl mx-auto space-y-2">
             <div className="text-[11px] text-slate-500 leading-relaxed">
-              <strong className="text-slate-700">Disclaimer:</strong> ChaiRakshak is an IoT-enabled research telemetry and operational decision-support tool. Recommended spray dosages, dilution rates, and Pre-Harvest Intervals (PHI) are computed using Tea Research Association (TRA) Tocklai bulletins and Central Insecticides Board (CIB&RC) registrations. Field application parameters must be cross-verified and authorized by certified estate managers prior to chemical dispatch. TeaTech Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, or unconfirmed agrochemical formulations.
+              <strong className="text-slate-700">Disclaimer:</strong> ChaiRakshak is an IoT-enabled research telemetry and operational decision-support tool. Recommended spray dosages, dilution rates, and Pre-Harvest Intervals (PHI) are computed using Tea Research Association (TRA) Tocklai bulletins and Central Insecticides Board (CIB&RC) registrations. Field application parameters must be cross-verified and authorized by certified estate managers prior to chemical dispatch. Rojes Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, or unconfirmed agrochemical formulations.
             </div>
             <div className="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 gap-2">
               <div>
-                © 2026 <strong className="text-slate-800">TeaTech Labs</strong>. All Rights Reserved. Lead Applicant: <strong className="text-emerald-700">Rangan Bhuyan</strong>.
+                © 2026 <strong className="text-slate-800">Rojes Labs</strong>. All Rights Reserved. Lead Applicant: <strong className="text-emerald-700">Pratibha Das Hatibaruah</strong>.
               </div>
               <div className="flex items-center gap-4">
                 <span>Location: Jorhat, Assam (IN-AS)</span>

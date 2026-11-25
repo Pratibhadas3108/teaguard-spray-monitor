@@ -41,7 +41,7 @@ def make_canvas_class(header_left, header_right):
             self.setStrokeColor(colors.HexColor("#cbd5e1"))
             self.setLineWidth(0.5)
             self.line(54, 45, 540, 45)
-            self.drawString(54, 32, "© 2026 TeaTech Labs · Confidential & Proprietary · NESFIC 2026 Submission")
+            self.drawString(54, 32, "© 2026 Rojes Labs · Confidential & Proprietary · NESFIC 2026 Submission")
             self.drawRightString(540, 32, f"Page {self._pageNumber} of {page_count}")
             self.restoreState()
 
@@ -153,8 +153,8 @@ def add_meta_box(story, st, doc_type_label):
          Paragraph("Document Type:", st["meta_label"]), Paragraph(doc_type_label, st["meta_val"])],
         [Paragraph("Challenge Partner:", st["meta_label"]), Paragraph("Tea Research Association (TRA) – Tocklai (New Technology Committee)", st["meta_val"]),
          Paragraph("Target Geography:", st["meta_label"]), Paragraph("Assam & Dooars Tea Plantations", st["meta_val"])],
-        [Paragraph("Submitting Entity:", st["meta_label"]), Paragraph("TeaTech Labs", st["meta_val"]),
-         Paragraph("Lead Applicant:", st["meta_label"]), Paragraph("<b>Rangan Bhuyan</b> (Lead Architect)", st["meta_val"])],
+        [Paragraph("Submitting Entity:", st["meta_label"]), Paragraph("Rojes Labs", st["meta_val"]),
+         Paragraph("Lead Applicant:", st["meta_label"]), Paragraph("<b>Pratibha Das Hatibaruah</b> (Lead Architect)", st["meta_val"])],
         [Paragraph("Technology Readiness:", st["meta_label"]), Paragraph("TRL-5 / Functional Prototype & Bench Validation", st["meta_val"]),
          Paragraph("Repository / Live Code:", st["meta_label"]), Paragraph("github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring", st["meta_val"])]
     ]
@@ -182,14 +182,14 @@ def add_signoff(story, st):
             "crop protection monitoring. Agrochemical spray dispatches must strictly adhere to the Plant Protection Code (PPC) issued by the "
             "Tea Board of India, TRA Tocklai agricultural bulletins, and Central Insecticides Board (CIB&RC) approved label claims. Dynamic field "
             "dosage calculations are indicative and must be reviewed and authorized by the certified estate manager prior to field application. "
-            "TeaTech Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, "
+            "Rojes Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, "
             "or unconfirmed agrochemical formulations.",
             st["disc"]
         ),
         Spacer(1, 10),
         Table([
-            [Paragraph("<b>Submitted on Behalf of:</b><br/>TeaTech Labs<br/>Jorhat, Assam, India", st["table_cell"]),
-             Paragraph("<b>Lead Applicant & Architect:</b><br/><b>Rangan Bhuyan</b><br/>Lead Applicant, NESFIC-I-06", st["table_cell"]),
+            [Paragraph("<b>Submitted on Behalf of:</b><br/>Rojes Labs<br/>Jorhat, Assam, India", st["table_cell"]),
+             Paragraph("<b>Lead Applicant & Architect:</b><br/><b>Pratibha Das Hatibaruah</b><br/>Lead Applicant, NESFIC-I-06", st["table_cell"]),
              Paragraph("<b>Institutional Partner:</b><br/>Tea Research Association (TRA) Tocklai<br/>New Technology Committee", st["table_cell"])]
         ], colWidths=[160, 160, 165], style=[
             ('BOX', (0, 0), (-1, -1), 1, st["border_c"]),
@@ -200,7 +200,7 @@ def add_signoff(story, st):
             ('RIGHTPADDING', (0, 0), (-1, -1), 8),
         ]),
         Spacer(1, 8),
-        Paragraph("© 2026 <b>TeaTech Labs</b>. All Rights Reserved. Lead Applicant: <b>Rangan Bhuyan</b>.", st["copy"])
+        Paragraph("© 2026 <b>Rojes Labs</b>. All Rights Reserved. Lead Applicant: <b>Pratibha Das Hatibaruah</b>.", st["copy"])
     ]))
 
 
@@ -222,7 +222,7 @@ def build_proposal_pdf(filename, assets_dir):
         "operator-carried knapsack sprayers where spray quality, canopy penetration, and dosage are governed by individual "
         "worker technique. Over-spraying leads to costly chemical wastage and severe FSSAI / European Union Maximum Residue Limit (MRL) "
         "rejections, while under-spraying sparks recurrent pest resurgence (Helopeltis, Red Spider Mite). <b>ChaiRakshak</b>, "
-        "engineered by <b>TeaTech Labs</b> under the leadership of <b>Rangan Bhuyan</b>, delivers a universal 172-gram IoT retrofit kit "
+        "engineered by <b>Rojes Labs</b> under the leadership of <b>Pratibha Das Hatibaruah</b>, delivers a universal 172-gram IoT retrofit kit "
         "featuring non-intrusive ultrasonic flow metering, 6-axis IMU lance arc sensing, eyes-free haptic pace guidance, and an offline-first "
         "LoRaWAN/BLE mesh architecture that enforces TRA Tocklai spray standards (400–450 L/ha) with zero operator screen distraction."
     )
@@ -251,7 +251,7 @@ def build_proposal_pdf(filename, assets_dir):
             "<b>Intended Outcome:</b> Transform operator-carried spraying into a precision-guided, digitally verifiable operation complying with Tea Research Association (TRA) Tocklai norms (400–450 L/ha), slashing chemical wastage by 20–25%, safeguarding operator health, and providing auditable digital proof for FSSAI/Tea Board export compliance."
         ]),
         ("2. Proposed Solution & Key Features", [
-            "<b>ChaiRakshak</b>, developed by <b>TeaTech Labs</b>, is a universal, non-invasive smart IoT monitoring and operator-guidance platform designed specifically for manual and motorized knapsack sprayers in tea plantations. The system retrofits onto existing estate equipment without modifying spray mechanics or adding ergonomic load, pairing edge-sensing hardware with an offline-first mobile sync app and an estate GIS dashboard.",
+            "<b>ChaiRakshak</b>, developed by <b>Rojes Labs</b>, is a universal, non-invasive smart IoT monitoring and operator-guidance platform designed specifically for manual and motorized knapsack sprayers in tea plantations. The system retrofits onto existing estate equipment without modifying spray mechanics or adding ergonomic load, pairing edge-sensing hardware with an offline-first mobile sync app and an estate GIS dashboard.",
             "<b>Main Modules and Functions:</b><br/>"
             "1. <i>Lance-Mounted Smart Sensor Hub:</i> Ultrasonic transit-time piezo-ceramic sensor clamped to the delivery pipe measuring discharge (mL/min) with ±1.5% accuracy, completely immune to chemical slurry clogging. Combined with a 6-axis IMU tracking lance sweep cadence, nozzle height (optimal 30–45 cm), and elevation angle.<br/>"
             "2. <i>Real-Time Operator Haptic Grip:</i> Ergonomic slip-on grip on the lance handle with an eccentric rotating mass (ERM) vibration motor communicating directly through intuitive tactile pulses (1 pulse: slow down; 2 pulses: speed up; continuous: nozzle clog/tilt). Workers keep 100% eyes-on-bush without needing smartphone screens.<br/>"
@@ -301,8 +301,8 @@ def build_proposal_pdf(filename, assets_dir):
             "<b>Confirmation:</b> No classified, restricted, or unconfirmed third-party data is assumed."
         ]),
         ("8. Team, Manpower & Expertise", [
-            "The execution team at <b>TeaTech Labs</b> combines embedded electronics, agricultural engineering, cloud architecture, and tea plantation domain operations:",
-            "• <b>Rangan Bhuyan (Lead Applicant & System Architect | Full-Time):</b> 8+ years experience in Agri-IoT product development, hardware-firmware system architecture, and technology translation from lab to field. Oversees technical execution, TRA Tocklai institutional liaisons, and regulatory compliance.<br/>"
+            "The execution team at <b>Rojes Labs</b> combines embedded electronics, agricultural engineering, cloud architecture, and tea plantation domain operations:",
+            "• <b>Pratibha Das Hatibaruah (Lead Applicant & System Architect | Full-Time):</b> 8+ years experience in Agri-IoT product development, hardware-firmware system architecture, and technology translation from lab to field. Oversees technical execution, TRA Tocklai institutional liaisons, and regulatory compliance.<br/>"
             "• <b>Embedded Hardware & Firmware Engineer (Full-Time):</b> Specialist in low-power microcontroller design (ESP32/ARM Cortex), analog signal conditioning for ultrasonic piezo sensors, Kalman filter implementation, and PCB layout (Altium/KiCad).<br/>"
             "• <b>RF & IoT Systems Specialist (Part-Time, Months 2–5):</b> Expertise in sub-GHz wireless propagation (LoRaWAN 865 MHz), BLE 5.0 mesh topology, antenna matching under dense canopy foliage, and power budget optimization.<br/>"
             "• <b>Full-Stack Cloud & GIS Developer (Full-Time):</b> Advanced experience in Python (FastAPI), geospatial databases (PostgreSQL/PostGIS), React.js frontend development, and offline-first mobile synchronization.<br/>"
@@ -379,7 +379,7 @@ def build_proposal_pdf(filename, assets_dir):
         story.append(Spacer(1, 8))
 
     add_signoff(story, st)
-    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Official Project Proposal", "TeaTech Labs | Lead: Rangan Bhuyan")
+    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Official Project Proposal", "Rojes Labs | Lead: Pratibha Das Hatibaruah")
     doc.build(story, canvasmaker=canvas_cls)
     print(f"Proposal PDF generated: {filename}")
 
@@ -524,7 +524,7 @@ def build_pow_pdf(filename, assets_dir):
     add_figure(story, assets_dir, "09_mrl_audit_compliance.jpg", "Evidence Fig 7: Cryptographic TRA Tocklai & FSSAI/EU Export MRL Compliance Ledger", st)
 
     add_signoff(story, st)
-    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Proof of Work & Solution Evidence", "TeaTech Labs | Lead: Rangan Bhuyan")
+    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Proof of Work & Solution Evidence", "Rojes Labs | Lead: Pratibha Das Hatibaruah")
     doc.build(story, canvasmaker=canvas_cls)
     print(f"Proof of Work PDF generated: {filename}")
 

@@ -1,6 +1,6 @@
 ================================================================================
 NESFIC-I-06: CHAI-RAKSHAK — SMART MONITORING OF MANUAL / OPERATOR-CARRIED SPRAYING
-Organization: TeaTech Labs | Lead Applicant: Rangan Bhuyan
+Organization: Rojes Labs | Lead Applicant: Pratibha Das Hatibaruah
 Portal Copy-Paste Plain Text File (Each section strictly < 500 words)
 ================================================================================
 
@@ -29,7 +29,7 @@ Transform operator-carried spraying from a blind manual routine into a precision
 --------------------------------------------------------------------------------
 2. PROPOSED SOLUTION & KEY FEATURES
 --------------------------------------------------------------------------------
-TeaTech Labs proposes ChaiRakshak, a universal, non-invasive smart IoT monitoring and operator-guidance platform designed specifically for manual and motorized knapsack sprayers in tea plantations. The system retrofits onto existing estate equipment without modifying spray mechanics or adding ergonomic load, pairing edge-sensing hardware with an offline-first mobile sync app and an estate GIS dashboard.
+Rojes Labs proposes ChaiRakshak, a universal, non-invasive smart IoT monitoring and operator-guidance platform designed specifically for manual and motorized knapsack sprayers in tea plantations. The system retrofits onto existing estate equipment without modifying spray mechanics or adding ergonomic load, pairing edge-sensing hardware with an offline-first mobile sync app and an estate GIS dashboard.
 
 Main Modules and Functions:
 1. Lance-Mounted Smart Sensor Hub:
@@ -107,7 +107,7 @@ Cloud, APIs & Hosting:
 --------------------------------------------------------------------------------
 5. DEVELOPMENT METHODOLOGY & INTERMEDIATE STEPS
 --------------------------------------------------------------------------------
-TeaTech Labs follows an Agile hardware-software co-design framework incorporating stage-gate milestones and continuous human-in-the-loop field validation with tea plantation operators.
+Rojes Labs follows an Agile hardware-software co-design framework incorporating stage-gate milestones and continuous human-in-the-loop field validation with tea plantation operators.
 
 Sequence of Execution:
 Phase 1: Discovery & Requirements Baselining (Weeks 1-4)
@@ -195,10 +195,10 @@ Development, calibration, and validation require specific datasets across hardwa
 --------------------------------------------------------------------------------
 8. TEAM, MANPOWER & EXPERTISE
 --------------------------------------------------------------------------------
-The execution team at TeaTech Labs combines deep expertise in embedded electronics, RF engineering, agricultural systems, cloud GIS architecture, and Assam tea plantation operations:
+The execution team at Rojes Labs combines deep expertise in embedded electronics, RF engineering, agricultural systems, cloud GIS architecture, and Assam tea plantation operations:
 
 Core Roles & Expertise:
-1. Lead Applicant & System Architect - Rangan Bhuyan (1 Person | Full-Time):
+1. Lead Applicant & System Architect - Pratibha Das Hatibaruah (1 Person | Full-Time):
 - 8+ years experience in Agri-IoT product development, hardware-firmware system architecture, and lab-to-field technology translation. Oversees project milestones, stakeholder liaisons with TRA Tocklai, IP strategy, and regulatory compliance.
 
 2. Embedded Hardware & Firmware Engineer (1 Person | Full-Time):
@@ -296,7 +296,7 @@ IP & Open-Source Dependencies:
 --------------------------------------------------------------------------------
 Indicative Resource & Budget Allocation (Rs. 40.00 Lakhs Problem Statement Grant):
 The Rs. 40,00,000 NESFIC-I-06 grant is structured to prioritize core deep-tech engineering while optimizing hardware fabrication and Assam field validation:
-1. Technical Engineering Team Cost: Rs. 20.00 Lakhs (50.0%) - 6-month multi-disciplinary team (Lead Architect Rangan Bhuyan, Embedded Hardware/Firmware, RF/LoRaWAN, Full-Stack Cloud/GIS, Tea Agronomist, Field QA Technician).
+1. Technical Engineering Team Cost: Rs. 20.00 Lakhs (50.0%) - 6-month multi-disciplinary team (Lead Architect Pratibha Das Hatibaruah, Embedded Hardware/Firmware, RF/LoRaWAN, Full-Stack Cloud/GIS, Tea Agronomist, Field QA Technician).
 2. Hardware Prototyping & Pilot Batch (100 Kits): Rs. 7.50 Lakhs (18.75%) - ESP32-S3, piezo ultrasonic transducers, NavIC GNSS, 6-axis IMU, LiFePO4 batteries, solar LoRaWAN gateways, and PCB fabrication runs.
 3. Mechanical Tooling & IP67 Enclosures: Rs. 4.00 Lakhs (10.0%) - Rapid injection-mold tooling, UV-polycarbonate housings, FKM chemical seals, and universal lance clamps.
 4. Field Pilot Validation (TRA Tocklai & Estates): Rs. 4.00 Lakhs (10.0%) - 50-hectare Assam trials, Water-Sensitive Paper consumables, operator workshops (Sadri/Assamese), and field logistics.

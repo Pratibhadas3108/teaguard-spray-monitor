@@ -59,7 +59,7 @@ draw.rounded_rectangle([60, 48, W - 60, 210], radius=16, fill="#ffffff", outline
 draw.rectangle([60, 48, 76, 210], fill=emerald)
 draw.text((105, 70), "NESFIC-I-06  |  CHAI-RAKSHAK REGULATORY & EXPORT COMPLIANCE FRAMEWORK", font=f_super, fill=emerald)
 draw.text((105, 102), "CRYPTOGRAPHIC TRA TOCKLAI & EXPORT MRL COMPLIANCE", font=f_title, fill=navy)
-draw.text((105, 160), "Tamper-Proof Traceability for Assam Orthodox & CTC Export Tea Consignments  ·  TeaTech Labs", font=f_sub, fill=slate)
+draw.text((105, 160), "Tamper-Proof Traceability for Assam Orthodox & CTC Export Tea Consignments  ·  Rojes Labs", font=f_sub, fill=slate)
 
 # 3. Four Interconnected Pillars (Cards)
 pillars = [
