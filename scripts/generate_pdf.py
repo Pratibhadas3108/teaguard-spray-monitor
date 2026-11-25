@@ -156,7 +156,7 @@ def add_meta_box(story, st, doc_type_label):
         [Paragraph("Submitting Entity:", st["meta_label"]), Paragraph("Rojes Labs", st["meta_val"]),
          Paragraph("Lead Applicant:", st["meta_label"]), Paragraph("<b>Pratibha Das Hatibaruah</b> (Lead Architect)", st["meta_val"])],
         [Paragraph("Technology Readiness:", st["meta_label"]), Paragraph("TRL-5 / Functional Prototype & Bench Validation", st["meta_val"]),
-         Paragraph("Repository / Live Code:", st["meta_label"]), Paragraph("github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring", st["meta_val"])]
+         Paragraph("Repository / Live Code:", st["meta_label"]), Paragraph("github.com/Pratibhadas3108/teaguard-spray-monitor", st["meta_val"])]
     ]
     t_meta = Table(meta_data, colWidths=[100, 150, 95, 140])
     t_meta.setStyle(TableStyle([

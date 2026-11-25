@@ -30,7 +30,7 @@ In tea plantations across Assam and the Dooars, crop protection against pests (T
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring.git
+git clone https://github.com/Pratibhadas3108/teaguard-spray-monitor.git
 cd nesfic-i06-smart-spray-monitoring
 
 # Install dependencies

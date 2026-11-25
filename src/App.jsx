@@ -959,7 +959,7 @@ export default function App() {
               </div>
 
               {/* Quick Meta Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-4 border-t border-white/10 text-xs">
                 <div>
                   <span className="text-slate-400">Submitting Entity:</span>
                   <div className="font-bold text-white">Rojes Labs</div>
@@ -975,6 +975,22 @@ export default function App() {
                 <div>
                   <span className="text-slate-400">Target Region:</span>
                   <div className="font-bold text-white">Assam & Dooars</div>
+                </div>
+                <div>
+                  <span className="text-slate-400">Live App URL:</span>
+                  <div>
+                    <a href="https://teaguard-spray-monitor.pages.dev/" target="_blank" rel="noopener noreferrer" className="font-semibold text-emerald-300 hover:underline break-all">
+                      teaguard-spray-monitor.pages.dev
+                    </a>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-slate-400">GitHub Repository:</span>
+                  <div>
+                    <a href="https://github.com/Pratibhadas3108/teaguard-spray-monitor" target="_blank" rel="noopener noreferrer" className="font-semibold text-cyan-300 hover:underline break-all">
+                      Pratibhadas3108/teaguard-spray-monitor
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1280,6 +1296,15 @@ export default function App() {
               <span className="font-semibold text-slate-800">Organization: <span className="text-slate-900 font-bold">Rojes Labs</span></span>
               <span className="text-slate-300">|</span>
               <span className="text-slate-600">Problem Statement: <span className="font-mono text-emerald-700 font-semibold">NESFIC-I-06</span></span>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-[11px]">
+              <a href="https://teaguard-spray-monitor.pages.dev/" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-semibold hover:underline">
+                Live URL: https://teaguard-spray-monitor.pages.dev/
+              </a>
+              <span className="text-slate-300">|</span>
+              <a href="https://github.com/Pratibhadas3108/teaguard-spray-monitor" target="_blank" rel="noopener noreferrer" className="text-slate-700 font-semibold hover:underline">
+                GitHub: https://github.com/Pratibhadas3108/teaguard-spray-monitor
+              </a>
             </div>
           </div>
 

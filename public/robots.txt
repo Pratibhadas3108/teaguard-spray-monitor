@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://teaguard-spray-monitor.pages.dev/sitemap.xml

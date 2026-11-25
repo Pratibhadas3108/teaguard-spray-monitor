@@ -66,7 +66,7 @@ Proposed User Journey:
 5. Plucking Lockout (Next 7 Days): The estate ERP automatically marks Section 4C as "Sprayed - Plucking Prohibited" until the 7-day PHI concludes.
 
 Prototype & Proof of Work Evidence:
-A fully functional React 18 + Vite MVP web application has been developed and deployed (source code at github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring). Key live interface modules include:
+A fully functional React 18 + Vite MVP web application has been developed and deployed (source code at github.com/Pratibhadas3108/teaguard-spray-monitor). Key live interface modules include:
 - Estate Spatial Swath Map: Interactive color-coded bush row grid showing live operator trails, under-sprayed skips, and overlap hotspots.
 - Operator Kinematic Telemetry & Haptic Simulator: Real-time gauges for flow rate (mL/min), manifold pressure (bar), lance angle (degrees), walking speed (km/h), and interactive audio-tactile pulse testing.
 - TRA Chemical & Tank Calculator: Automated dilution calculator for Tea Mosquito Bug, Red Spider Mite, Blister Blight, and Looper.
@@ -320,7 +320,7 @@ SUPPORTING MATERIAL PORTAL UPLOAD REFERENCE
 - Upload Proof of Work / Solution Evidence (PDF only, Max 10 MB):
   NESFIC_I06_Proof_of_Work.pdf (5.6 MB)
 - Product / Website URL:
-  https://github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring
+  https://github.com/Pratibhadas3108/teaguard-spray-monitor
 - Additional Supporting Material (PDF only, Max 10 MB):
   NESFIC_I06_Proposal.pdf (1.7 MB)
 ================================================================================
