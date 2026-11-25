@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="#f0fdf4" stroke="#10b981" stroke-width="2.5" />
+  
+  <!-- Stylized Tea Leaf -->
+  <path d="M18 42 C18 24, 30 14, 46 14 C46 32, 34 46, 18 42 Z" fill="url(#leafGrad)" />
+  <path d="M22 38 Q32 26 44 16" stroke="#ecfdf5" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8" />
+  
+  <!-- Smart Spray Droplet -->
+  <path d="M38 28 C38 28, 48 38, 48 43 C48 47.5, 43.5 51, 38 51 C32.5 51, 28 47.5, 28 43 C28 38, 38 28, 38 28 Z" fill="url(#dropGrad)" />
+  <circle cx="35" cy="40" r="2.5" fill="#ffffff" opacity="0.75" />
+  
+  <!-- Radio / IoT Telemetry Waves -->
+  <path d="M44 26 A16 16 0 0 1 52 34" stroke="#059669" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <path d="M48 20 A24 24 0 0 1 58 32" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7" />
+</svg>

@@ -167,7 +167,24 @@ export default function App() {
         </div>
 
         {/* Global Estate Status */}
-        <div className="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm">
+        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
+          {/* Lead Applicant & Organization Pill */}
+          <div className="hidden xl:flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+            <span className="font-semibold text-slate-900">TeaTech Labs</span>
+            <span className="text-slate-400">·</span>
+            <span className="text-emerald-700 font-medium">Lead: Rangan Bhuyan</span>
+          </div>
+
+          {/* Download PDF Button */}
+          <a
+            href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
+            download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Proposal & PoW PDF</span>
+          </a>
+
           {/* Weather Widget */}
           <div className="flex items-center gap-2 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
             <Wind className="w-4 h-4 text-teal-600" />
@@ -182,7 +199,7 @@ export default function App() {
 
           <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 text-emerald-800 font-medium">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
-            <span>14 Sprayers Online</span>
+            <span>14 Online</span>
           </div>
 
           <button 
@@ -208,6 +225,7 @@ export default function App() {
           { id: 'wsp', label: 'WSP Droplet Scanner', icon: Scan },
           { id: 'compliance', label: 'MRL & Audit Certificate', icon: Shield },
           { id: 'hardware', label: 'IoT Retrofit Kit Spec', icon: Cpu },
+          { id: 'proposal', label: 'Proposal & Proof of Work (PoW)', icon: FileText },
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -886,6 +904,131 @@ export default function App() {
           </div>
         )}
 
+        {/* TAB 7: PROPOSAL & PROOF OF WORK (POW) */}
+        {activeTab === 'proposal' && (
+          <div className="space-y-6">
+            {/* Top Download Hero Card */}
+            <div className="bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900 rounded-2xl p-6 sm:p-8 text-white space-y-4 shadow-lg">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      NESFIC-I-06 Official Submission
+                    </span>
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200">
+                      TRL-5 Validated
+                    </span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+                    ChaiRakshak: Proposal & Proof of Work Dossier
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
+                    Smart Monitoring of Manual / Operator-Carried Spraying in Assam & Dooars Tea Plantations. Prepared by <strong>TeaTech Labs</strong> · Lead Applicant: <strong>Rangan Bhuyan</strong>.
+                  </p>
+                </div>
+
+                <a
+                  href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
+                  download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
+                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md hover:shadow-lg"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download Official PDF (8 Pages)</span>
+                </a>
+              </div>
+
+              {/* Quick Meta Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10 text-xs">
+                <div>
+                  <span className="text-slate-400">Submitting Entity:</span>
+                  <div className="font-bold text-white">TeaTech Labs</div>
+                </div>
+                <div>
+                  <span className="text-slate-400">Lead Applicant:</span>
+                  <div className="font-bold text-emerald-300">Rangan Bhuyan</div>
+                </div>
+                <div>
+                  <span className="text-slate-400">Challenge Partner:</span>
+                  <div className="font-bold text-white">TRA Tocklai</div>
+                </div>
+                <div>
+                  <span className="text-slate-400">Target Region:</span>
+                  <div className="font-bold text-white">Assam & Dooars</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 12 Sections Summary Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">12 Proposal Sections Content Summary</h3>
+                  <p className="text-xs text-slate-500">Every section strictly formatted under 500 words and compiled into the official PDF.</p>
+                </div>
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700">
+                  Total: 12 Modules
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                {[
+                  { n: "01", t: "Problem Understanding & Workflow", d: "Manual knapsack drift, 35% chemical loss, worker pacing variance, and pest resurgence in Assam." },
+                  { n: "02", t: "Proposed Solution & Key Features", d: "Universal 172g retrofit kit, clamp-on ultrasonic flow sensor, 6-axis IMU, and haptic vibration grip." },
+                  { n: "03", t: "User Journey, Wireframes & PoW", d: "Morning muster QR dispatch, in-field tactile guidance, water tanker logging, and live React MVP." },
+                  { n: "04", t: "Technology & Architecture", d: "ESP32-S3 edge node, NavIC/GPS dual band, Semtech SX1262 LoRaWAN (865 MHz), and PostGIS cloud." },
+                  { n: "05", t: "Development Methodology", d: "6-phase stage-gate agile process from TRA Tocklai baselining to 50-hectare plantation trials." },
+                  { n: "06", t: "Development Timeline", d: "6-month timeline to TRL-7 commercial validation across Upper Assam tea estates." },
+                  { n: "07", t: "Data & Information Requirements", d: "High-frequency 50Hz kinematic IMU, WSP droplet imagery, and TRA Plant Protection Code norms." },
+                  { n: "08", t: "Team & Manpower Expertise", d: "Lead Applicant Rangan Bhuyan (IoT Architect), firmware engineers, RF specialists, and tea agronomists." },
+                  { n: "09", t: "Testing, Validation & Evidence", d: "±1.42% flow accuracy in copper slurries, 94.2% swath uniformity, and 98.4% LoRa packet delivery." },
+                  { n: "10", t: "Security, Safety & Compliance", d: "128-bit AES telemetry encryption, SHA-256 immutable spray ledger, and FSSAI/EU MRL compliance." },
+                  { n: "11", t: "Innovation & Differentiation", d: "Non-contact ultrasonic clamp vs impeller clogging; eyes-free haptics vs distracting mobile screens." },
+                  { n: "12", t: "Resources, Risks & Validation", d: "₹4,850 unit BOM; mitigations for pesticide corrosion, dense canopy GNSS loss, and worker adoption." }
+                ].map(item => (
+                  <div key={item.n} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-50 transition space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-emerald-700 bg-emerald-100/60 px-1.5 py-0.5 rounded text-[11px]">{item.n}</span>
+                      <span className="font-bold text-slate-900">{item.t}</span>
+                    </div>
+                    <p className="text-slate-600 text-[11px] leading-relaxed pl-7">{item.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Technical Proof of Work Annexures Card */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+              <h3 className="text-base font-bold text-slate-900">Proof of Work (PoW) Technical Evidence Included in Dossier</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                  <div className="font-bold text-emerald-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Annexure A: Hardware BOM
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Itemized production cost breakdown (₹4,850 / kit) featuring ESP32-S3, piezo ultrasonic transducers, and NavIC receiver.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                  <div className="font-bold text-teal-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-teal-600" /> Annexure B: Calibration Rig
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Benchtop test logs across water, copper oxychloride 50% WP, and thiamethoxam verifying ±1.42% flow accuracy with zero clogging.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                  <div className="font-bold text-blue-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-600" /> Annexure C: WSP Trials
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Water-sensitive paper droplet density comparison proving 94.2% canopy penetration vs 52.4% unmonitored manual baseline.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* MODAL: TRA TOCKLAI AUDIT CERTIFICATE */}
@@ -985,14 +1128,78 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white px-6 py-4 text-xs text-slate-500 flex flex-wrap justify-between items-center gap-2 shadow-sm">
-        <div>ChaiRakshak IoT Platform · Developed for Assam Innovation & Startup Foundation (AISF) · NESFIC 2026</div>
-        <div className="flex items-center gap-3">
-          <span className="text-emerald-600 font-medium flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-600"></span> Dev Server Active (Port 5177)
-          </span>
-          <span>Version 1.2.0-MVP</span>
+      {/* Comprehensive Enterprise Footer */}
+      <footer className="border-t border-slate-200 bg-white text-xs text-slate-600 shadow-sm mt-12">
+        {/* Main Footer Info */}
+        <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="md:col-span-2 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold shadow-sm">
+                <Droplet className="w-4 h-4 fill-white" />
+              </div>
+              <span className="font-extrabold text-base tracking-tight text-slate-900">
+                Chai<span className="text-emerald-600">Rakshak</span>
+              </span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 font-medium">
+                v1.3.0-Production
+              </span>
+            </div>
+            <p className="text-slate-500 leading-relaxed text-[11px]">
+              ChaiRakshak is an IoT & Edge-AI precision spray monitoring and telemetry platform developed for manual and operator-carried knapsack sprayers across Assam and Dooars tea plantations. Built for the North East Seva First Innovation Challenge (NESFIC 2026), under the Assam Innovation & Startup Foundation (AISF), Department of Innovation, Incubation and Startups (DIIS), Govt. of Assam, in technical alignment with the Tea Research Association (TRA) Tocklai.
+            </p>
+            <div className="pt-1 flex flex-wrap items-center gap-3 text-[11px]">
+              <span className="font-semibold text-slate-800">Lead Applicant: <span className="text-emerald-700 font-bold">Rangan Bhuyan</span></span>
+              <span className="text-slate-300">|</span>
+              <span className="font-semibold text-slate-800">Organization: <span className="text-slate-900 font-bold">TeaTech Labs</span></span>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-600">Problem Statement: <span className="font-mono text-emerald-700 font-semibold">NESFIC-I-06</span></span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Compliance & Standards</h4>
+            <ul className="space-y-1.5 text-[11px] text-slate-500">
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Tea Board Plant Protection Code (PPC)</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> TRA Tocklai Guidelines (400-450 L/ha)</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> FSSAI & European Union Export MRL Norms</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> CIB&RC Approved Agrochemical Labels</li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Proposal & Artifacts</h4>
+            <div className="space-y-2">
+              <a 
+                href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf" 
+                download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition"
+              >
+                <Download className="w-3.5 h-3.5" /> Download Proposal & PoW PDF
+              </a>
+              <p className="text-[10px] text-slate-400 leading-normal">
+                Official 8-page submission dossier including 12 sections, hardware BOM, and WSP trial results.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Disclaimer Strip */}
+        <div className="border-t border-slate-200 bg-slate-50/80 px-6 py-4">
+          <div className="max-w-7xl mx-auto space-y-2">
+            <div className="text-[11px] text-slate-500 leading-relaxed">
+              <strong className="text-slate-700">Disclaimer:</strong> ChaiRakshak is an IoT-enabled research telemetry and operational decision-support tool. Recommended spray dosages, dilution rates, and Pre-Harvest Intervals (PHI) are computed using Tea Research Association (TRA) Tocklai bulletins and Central Insecticides Board (CIB&RC) registrations. Field application parameters must be cross-verified and authorized by certified estate managers prior to chemical dispatch. TeaTech Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, or unconfirmed agrochemical formulations.
+            </div>
+            <div className="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 gap-2">
+              <div>
+                © 2026 <strong className="text-slate-800">TeaTech Labs</strong>. All Rights Reserved. Lead Applicant: <strong className="text-emerald-700">Rangan Bhuyan</strong>.
+              </div>
+              <div className="flex items-center gap-4">
+                <span>Location: Jorhat, Assam (IN-AS)</span>
+                <span className="text-slate-300">|</span>
+                <span>Coordinates: 26.7509° N, 94.2037° E</span>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
