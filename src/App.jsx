@@ -4,7 +4,7 @@ import {
   Cpu, Droplet, Download, Eye, FileText, Gauge, Info, Layers, 
   MapPin, Play, Pause, RefreshCw, Shield, Sparkles, User, Users, 
   Wifi, WifiOff, Wind, Zap, BarChart3, Sliders, BatteryCharging,
-  Printer, X, Calculator, Scan, Volume2, CloudRain, Sun, Award
+  Printer, X, Calculator, Scan, Volume2, CloudRain, Sun, Award, BookOpen
 } from 'lucide-react';
 
 export default function App() {
@@ -12,6 +12,7 @@ export default function App() {
   const [isSimulating, setIsSimulating] = useState(true);
   const [selectedOperator, setSelectedOperator] = useState('OP-104');
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [selectedInfographic, setSelectedInfographic] = useState(null);
   const [hapticFeedbackAlert, setHapticFeedbackAlert] = useState(null);
 
@@ -168,7 +169,17 @@ export default function App() {
         </div>
 
         {/* Global Estate Status */}
-        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm">
+          {/* Tutorial / How to Use Link */}
+          <button
+            onClick={() => setShowTutorialModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 transition shadow-sm"
+            title="Learn what ChaiRakshak does and how to use it"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+            <span>Tutorial</span>
+          </button>
+
           {/* Lead Applicant & Organization Pill */}
           <div className="hidden xl:flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
             <span className="font-semibold text-slate-900">Rojes Labs</span>
@@ -1169,6 +1180,100 @@ export default function App() {
             </div>
             <div className="bg-slate-100 p-2">
               <img src={selectedInfographic.src} alt={selectedInfographic.title} className="w-full h-auto rounded-lg" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: INTERACTIVE APPLICATION TUTORIAL & USER GUIDE */}
+      {showTutorialModal && (
+        <div
+          onClick={() => setShowTutorialModal(false)}
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="bg-white max-w-3xl w-full rounded-2xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
+          >
+            <button
+              onClick={() => setShowTutorialModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="border-b border-slate-200 pb-4 space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                <BookOpen className="w-3.5 h-3.5" /> Interactive User Guide
+              </div>
+              <h2 className="text-xl font-extrabold text-slate-900">What ChaiRakshak Does & How to Use It</h2>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                <strong>ChaiRakshak</strong> (developed by <strong>Rojes Labs</strong> for <strong>NESFIC-I-06</strong>) is a smart IoT monitoring and digital twin platform for manual and operator-carried knapsack sprayers in Assam & Dooars tea plantations. It ensures TRA Tocklai dosage uniformity (400–450 L/ha), prevents chemical wastage, and protects export Maximum Residue Limits (MRL).
+              </p>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <h3 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Step-by-Step Platform Walkthrough</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  {
+                    tab: 'dashboard',
+                    step: '1. Field Operations Live Map',
+                    desc: 'Monitor real-time operator GPS+NavIC tracks across tea bush rows. Green = optimal (400–450 L/ha), Blue = under-spray, Red = over-spray. Switch between operators in the leaderboard or pause/resume live simulation from the top bar.'
+                  },
+                  {
+                    tab: 'telemetry',
+                    step: '2. Lance Kinematics & Haptics',
+                    desc: 'Inspect non-intrusive ultrasonic flow rates (mL/min), 6-axis IMU lance pitch angles, and click the 3 Audio-Haptic Tester buttons to hear the vibration cues sent directly to the operator’s grip.'
+                  },
+                  {
+                    tab: 'calculator',
+                    step: '3. TRA Chemical & Tank Calculator',
+                    desc: 'Select a target tea pest (e.g. Helopeltis, Red Spider Mite, Blister Blight), enter section hectares, and pick knapsack capacity (16L/20L/12L) to compute TRA-compliant dilution ratios and Pre-Harvest Interval (PHI) lockouts.'
+                  },
+                  {
+                    tab: 'wsp',
+                    step: '4. WSP Droplet Scanner',
+                    desc: 'Inspect optical Water-Sensitive Paper (WSP) diagnostics measuring droplet density (42 droplets/cm²), Volume Median Diameter (185 µm), and top-to-bottom canopy penetration.'
+                  },
+                  {
+                    tab: 'compliance',
+                    step: '5. MRL & Audit Certificate',
+                    desc: 'Review active TRA chemical protocols, FSSAI/EU MRL safe-plucking dates, and click "View & Print TRA Audit Certificate" for a cryptographically signed export compliance report.'
+                  },
+                  {
+                    tab: 'proposal',
+                    step: '6. Proposal, PoW & Infographics',
+                    desc: 'Download the standalone Proposal PDF (1.7 MB) and Proof of Work PDF (5.6 MB), review the ₹40.00 Lakhs grant budget breakdown, and click any of the 9 16:9 blueprint infographics to zoom.'
+                  }
+                ].map(item => (
+                  <div key={item.tab} className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between space-y-2.5">
+                    <div className="space-y-1">
+                      <div className="font-bold text-slate-900">{item.step}</div>
+                      <p className="text-slate-600 text-[11px] leading-relaxed">{item.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setActiveTab(item.tab);
+                        setShowTutorialModal(false);
+                      }}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800"
+                    >
+                      <span>Open this module</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-200">
+              <button
+                onClick={() => setShowTutorialModal(false)}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-sm"
+              >
+                Got It — Explore Dashboard
+              </button>
             </div>
           </div>
         </div>
