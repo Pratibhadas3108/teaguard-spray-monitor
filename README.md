@@ -68,7 +68,7 @@ flowchart TD
 2. **Lance Kinematics & Ultrasonic Flow:** Non-intrusive flow rate, pressure, and lance elevation monitoring.
 3. **TRA Dosage & MRL Safety:** Automatic Pre-Harvest Interval (PHI) plucking lockout and certified export audit log generation.
 4. **Hardware Retrofit Kit Specs:** Low-power ESP32-S3 dual-core microcontroller, multi-constellation NavIC/GPS, and LiFePO4 battery (18+ hours runtime).
-5. **NESFIC-I-06 Proposal Dossier:** Complete 12-section proposal aligned with AISF requirements, 9 16:9 blueprint infographics, and downloadable PDF (`NESFIC_I06_Proposal_and_Proof_of_Work.pdf`).
+5. **NESFIC-I-06 Proposal Dossier:** Complete 12-section proposal aligned with AISF requirements, 9 16:9 blueprint infographics, and two standalone downloadable PDFs (`NESFIC_I06_Proposal.pdf` & `NESFIC_I06_Proof_of_Work.pdf`).
 
 ---
 

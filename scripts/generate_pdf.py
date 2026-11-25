@@ -1,5 +1,4 @@
 import os
-import sys
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable, Image as RLImage
@@ -8,240 +7,216 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
-class NumberedCanvas(canvas.Canvas):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._saved_page_states = []
 
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
+def make_canvas_class(header_left, header_right):
+    class NumberedCanvas(canvas.Canvas):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._saved_page_states = []
 
-    def save(self):
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self.draw_page_decorations(num_pages)
-            super().showPage()
-        super().save()
+        def showPage(self):
+            self._saved_page_states.append(dict(self.__dict__))
+            self._startPage()
 
-    def draw_page_decorations(self, page_count):
-        self.saveState()
-        self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor("#64748b"))
-        
-        # Header (pages after page 1)
-        if self._pageNumber > 1:
-            self.drawString(54, 800, "NESFIC-I-06: ChaiRakshak · Smart Spray Monitoring in Tea Plantations")
-            self.drawRightString(540, 800, "TeaTech Labs | Lead: Rangan Bhuyan")
+        def save(self):
+            num_pages = len(self._saved_page_states)
+            for state in self._saved_page_states:
+                self.__dict__.update(state)
+                self.draw_page_decorations(num_pages)
+                super().showPage()
+            super().save()
+
+        def draw_page_decorations(self, page_count):
+            self.saveState()
+            self.setFont("Helvetica", 8)
+            self.setFillColor(colors.HexColor("#64748b"))
+
+            if self._pageNumber > 1:
+                self.drawString(54, 800, header_left)
+                self.drawRightString(540, 800, header_right)
+                self.setStrokeColor(colors.HexColor("#cbd5e1"))
+                self.setLineWidth(0.5)
+                self.line(54, 792, 540, 792)
+
             self.setStrokeColor(colors.HexColor("#cbd5e1"))
             self.setLineWidth(0.5)
-            self.line(54, 792, 540, 792)
-            
-        # Footer
-        self.setStrokeColor(colors.HexColor("#cbd5e1"))
-        self.setLineWidth(0.5)
-        self.line(54, 45, 540, 45)
-        self.drawString(54, 32, "© 2026 TeaTech Labs · Confidential & Proprietary · NESFIC 2026 Submission")
-        self.drawRightString(540, 32, f"Page {self._pageNumber} of {page_count}")
-        self.restoreState()
+            self.line(54, 45, 540, 45)
+            self.drawString(54, 32, "© 2026 TeaTech Labs · Confidential & Proprietary · NESFIC 2026 Submission")
+            self.drawRightString(540, 32, f"Page {self._pageNumber} of {page_count}")
+            self.restoreState()
 
-def build_pdf(filename):
-    doc = SimpleDocTemplate(
-        filename,
-        pagesize=A4,
-        leftMargin=54,
-        rightMargin=54,
-        topMargin=54,
-        bottomMargin=54
-    )
+    return NumberedCanvas
 
+
+def get_styles():
     styles = getSampleStyleSheet()
-    
-    # Custom Palette
-    primary = colors.HexColor("#065f46")   # Deep Emerald
-    secondary = colors.HexColor("#0f766e") # Dark Teal
-    accent = colors.HexColor("#0284c7")    # Sky Blue
-    dark = colors.HexColor("#0f172a")      # Slate 900
-    gray = colors.HexColor("#475569")      # Slate 600
-    bg_light = colors.HexColor("#f8fafc")  # Slate 50
+    primary = colors.HexColor("#065f46")
+    secondary = colors.HexColor("#0f766e")
+    dark = colors.HexColor("#0f172a")
+    gray = colors.HexColor("#475569")
+    bg_light = colors.HexColor("#f8fafc")
     border_c = colors.HexColor("#e2e8f0")
 
-    # Typography Styles
-    title_style = ParagraphStyle(
-        'DocTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=22,
-        leading=26,
-        textColor=primary,
-        alignment=0,
-        spaceAfter=6
-    )
-    
-    subtitle_style = ParagraphStyle(
-        'DocSubTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=12,
-        leading=16,
-        textColor=secondary,
-        spaceAfter=12
-    )
+    return {
+        "primary": primary,
+        "secondary": secondary,
+        "dark": dark,
+        "gray": gray,
+        "bg_light": bg_light,
+        "border_c": border_c,
+        "title": ParagraphStyle(
+            'DocTitle', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=21, leading=25, textColor=primary, alignment=0, spaceAfter=6
+        ),
+        "subtitle": ParagraphStyle(
+            'DocSubTitle', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=11.5, leading=15, textColor=secondary, spaceAfter=12
+        ),
+        "h1": ParagraphStyle(
+            'Heading1_Custom', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=13, leading=17, textColor=primary, spaceBefore=14, spaceAfter=6, keepWithNext=True
+        ),
+        "h2": ParagraphStyle(
+            'Heading2_Custom', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=10.5, leading=14, textColor=dark, spaceBefore=8, spaceAfter=4, keepWithNext=True
+        ),
+        "body": ParagraphStyle(
+            'Body_Custom', parent=styles['Normal'], fontName='Helvetica',
+            fontSize=9, leading=13.5, textColor=dark, spaceAfter=6
+        ),
+        "callout": ParagraphStyle(
+            'Callout_Text', parent=styles['Normal'], fontName='Helvetica-Oblique',
+            fontSize=8.5, leading=12.5, textColor=colors.HexColor("#1e293b")
+        ),
+        "table_cell": ParagraphStyle(
+            'TableCell', parent=styles['Normal'], fontName='Helvetica',
+            fontSize=8, leading=11, textColor=dark
+        ),
+        "table_header": ParagraphStyle(
+            'TableHeader', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=8, leading=11, textColor=colors.white
+        ),
+        "meta_label": ParagraphStyle(
+            'MetaLabel', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=8.5, leading=12, textColor=primary
+        ),
+        "meta_val": ParagraphStyle(
+            'MetaVal', parent=styles['Normal'], fontName='Helvetica',
+            fontSize=8.5, leading=12, textColor=dark
+        ),
+        "caption": ParagraphStyle(
+            'FigCaption', parent=styles['Normal'], fontName='Helvetica-Oblique',
+            fontSize=8, leading=11, textColor=gray, alignment=1, spaceBefore=4, spaceAfter=10
+        ),
+        "disc": ParagraphStyle(
+            'Disc', parent=styles['Normal'], fontName='Helvetica',
+            fontSize=7.5, leading=10.5, textColor=gray
+        ),
+        "copy": ParagraphStyle(
+            'Copy', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=8, leading=10, textColor=dark, alignment=1
+        ),
+        "super_title": ParagraphStyle(
+            'SuperTitle', parent=styles['Normal'], fontName='Helvetica-Bold',
+            fontSize=9, leading=11, textColor=secondary, spaceAfter=4
+        ),
+        "super_sub": ParagraphStyle(
+            'SuperSub', parent=styles['Normal'], fontName='Helvetica',
+            fontSize=8.5, leading=11, textColor=gray, spaceAfter=8
+        )
+    }
 
-    h1_style = ParagraphStyle(
-        'Heading1_Custom',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=13,
-        leading=17,
-        textColor=primary,
-        spaceBefore=14,
-        spaceAfter=6,
-        keepWithNext=True
-    )
 
-    h2_style = ParagraphStyle(
-        'Heading2_Custom',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=10.5,
-        leading=14,
-        textColor=dark,
-        spaceBefore=8,
-        spaceAfter=4,
-        keepWithNext=True
-    )
+def add_figure(story, assets_dir, fname, caption_text, st):
+    fpath = os.path.join(assets_dir, fname)
+    if os.path.exists(fpath):
+        rl_img = RLImage(fpath, width=480, height=270)
+        img_box = Table([[rl_img]], colWidths=[484])
+        img_box.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TOPPADDING', (0, 0), (-1, -1), 2),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+            ('LEFTPADDING', (0, 0), (-1, -1), 2),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 2),
+        ]))
+        story.append(KeepTogether([
+            Spacer(1, 6),
+            img_box,
+            Paragraph(caption_text, st["caption"])
+        ]))
 
-    body_style = ParagraphStyle(
-        'Body_Custom',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=9,
-        leading=13.5,
-        textColor=dark,
-        spaceAfter=6
-    )
 
-    callout_style = ParagraphStyle(
-        'Callout_Text',
-        parent=styles['Normal'],
-        fontName='Helvetica-Oblique',
-        fontSize=8.5,
-        leading=12.5,
-        textColor=colors.HexColor("#1e293b")
-    )
-
-    table_cell = ParagraphStyle(
-        'TableCell',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=8,
-        leading=11,
-        textColor=dark
-    )
-
-    table_header = ParagraphStyle(
-        'TableHeader',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8,
-        leading=11,
-        textColor=colors.white
-    )
-
-    meta_label = ParagraphStyle(
-        'MetaLabel',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=12,
-        textColor=primary
-    )
-
-    meta_val = ParagraphStyle(
-        'MetaVal',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=8.5,
-        leading=12,
-        textColor=dark
-    )
-
-    story = []
-    assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "public", "assets")
-
-    caption_style = ParagraphStyle(
-        'FigCaption',
-        parent=styles['Normal'],
-        fontName='Helvetica-Oblique',
-        fontSize=8,
-        leading=11,
-        textColor=gray,
-        alignment=1,
-        spaceBefore=4,
-        spaceAfter=10
-    )
-
-    def add_figure(fname, caption_text):
-        fpath = os.path.join(assets_dir, fname)
-        if os.path.exists(fpath):
-            # 16:9 widescreen aspect ratio fitted to 480pt content width
-            img_w = 480
-            img_h = 270
-            rl_img = RLImage(fpath, width=img_w, height=img_h)
-            img_box = Table([[rl_img]], colWidths=[484])
-            img_box.setStyle(TableStyle([
-                ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#cbd5e1")),
-                ('BACKGROUND', (0,0), (-1,-1), colors.white),
-                ('TOPPADDING', (0,0), (-1,-1), 2),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 2),
-                ('LEFTPADDING', (0,0), (-1,-1), 2),
-                ('RIGHTPADDING', (0,0), (-1,-1), 2),
-            ]))
-            story.append(KeepTogether([
-                Spacer(1, 6),
-                img_box,
-                Paragraph(caption_text, caption_style)
-            ]))
-
-    # ================= COVER / HEADER BANNER =================
-    story.append(Paragraph("NORTH EAST SEVA FIRST INNOVATION CHALLENGE (NESFIC 2026)", ParagraphStyle(
-        'SuperTitle', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, leading=11, textColor=secondary, spaceAfter=4
-    )))
-    story.append(Paragraph("Government of Assam · Department of Innovation, Incubation and Startups (DIIS)", ParagraphStyle(
-        'SuperSub', parent=styles['Normal'], fontName='Helvetica', fontSize=8.5, leading=11, textColor=gray, spaceAfter=8
-    )))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=primary, spaceAfter=12))
-
-    story.append(Paragraph("PROPOSAL & PROOF OF WORK DOSSIER", title_style))
-    story.append(Paragraph("ChaiRakshak: Smart Monitoring of Manual / Operator-Carried Spraying in Tea Plantations", subtitle_style))
-
-    # Meta Table Box
+def add_meta_box(story, st, doc_type_label):
     meta_data = [
-        [Paragraph("Challenge Track:", meta_label), Paragraph("NESFIC-I-06 (Crop Protection & Spraying / IoT & Sensors)", meta_val),
-         Paragraph("Date of Submission:", meta_label), Paragraph("November 2026", meta_val)],
-        [Paragraph("Challenge Partner:", meta_label), Paragraph("Tea Research Association (TRA) – Tocklai (New Technology Committee)", meta_val),
-         Paragraph("Target Geography:", meta_label), Paragraph("Assam & Dooars Tea Plantations", meta_val)],
-        [Paragraph("Submitting Entity:", meta_label), Paragraph("TeaTech Labs", meta_val),
-         Paragraph("Lead Applicant:", meta_label), Paragraph("<b>Rangan Bhuyan</b> (Lead Architect)", meta_val)],
-        [Paragraph("Technology Readiness:", meta_label), Paragraph("TRL-5 / Functional Prototype & Bench Validation", meta_val),
-         Paragraph("Repository / Live Code:", meta_label), Paragraph("github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring", meta_val)]
+        [Paragraph("Challenge Track:", st["meta_label"]), Paragraph("NESFIC-I-06 (Crop Protection & Spraying / IoT & Sensors)", st["meta_val"]),
+         Paragraph("Document Type:", st["meta_label"]), Paragraph(doc_type_label, st["meta_val"])],
+        [Paragraph("Challenge Partner:", st["meta_label"]), Paragraph("Tea Research Association (TRA) – Tocklai (New Technology Committee)", st["meta_val"]),
+         Paragraph("Target Geography:", st["meta_label"]), Paragraph("Assam & Dooars Tea Plantations", st["meta_val"])],
+        [Paragraph("Submitting Entity:", st["meta_label"]), Paragraph("TeaTech Labs", st["meta_val"]),
+         Paragraph("Lead Applicant:", st["meta_label"]), Paragraph("<b>Rangan Bhuyan</b> (Lead Architect)", st["meta_val"])],
+        [Paragraph("Technology Readiness:", st["meta_label"]), Paragraph("TRL-5 / Functional Prototype & Bench Validation", st["meta_val"]),
+         Paragraph("Repository / Live Code:", st["meta_label"]), Paragraph("github.com/RonHatibaruah/nesfic-i06-smart-spray-monitoring", st["meta_val"])]
     ]
     t_meta = Table(meta_data, colWidths=[100, 150, 95, 140])
     t_meta.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f0fdf4")),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#bbf7d0")),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#dcfce7")),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 6),
-        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f0fdf4")),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#bbf7d0")),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#dcfce7")),
+        ('TOPPADDING', (0, 0), (-1, -1), 5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
     ]))
     story.append(t_meta)
     story.append(Spacer(1, 14))
 
-    # Executive Summary Box
+
+def add_signoff(story, st):
+    story.append(KeepTogether([
+        Spacer(1, 8),
+        Paragraph("Legal Disclaimer, Compliance Endorsement & Lead Applicant Sign-Off", st["h2"]),
+        HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=8),
+        Paragraph(
+            "<b>Disclaimer:</b> ChaiRakshak is an IoT-enabled telemetry and agricultural decision support system designed for tea plantation "
+            "crop protection monitoring. Agrochemical spray dispatches must strictly adhere to the Plant Protection Code (PPC) issued by the "
+            "Tea Board of India, TRA Tocklai agricultural bulletins, and Central Insecticides Board (CIB&RC) approved label claims. Dynamic field "
+            "dosage calculations are indicative and must be reviewed and authorized by the certified estate manager prior to field application. "
+            "TeaTech Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, "
+            "or unconfirmed agrochemical formulations.",
+            st["disc"]
+        ),
+        Spacer(1, 10),
+        Table([
+            [Paragraph("<b>Submitted on Behalf of:</b><br/>TeaTech Labs<br/>Jorhat, Assam, India", st["table_cell"]),
+             Paragraph("<b>Lead Applicant & Architect:</b><br/><b>Rangan Bhuyan</b><br/>Lead Applicant, NESFIC-I-06", st["table_cell"]),
+             Paragraph("<b>Institutional Partner:</b><br/>Tea Research Association (TRA) Tocklai<br/>New Technology Committee", st["table_cell"])]
+        ], colWidths=[160, 160, 165], style=[
+            ('BOX', (0, 0), (-1, -1), 1, st["border_c"]),
+            ('BACKGROUND', (0, 0), (-1, -1), st["bg_light"]),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ]),
+        Spacer(1, 8),
+        Paragraph("© 2026 <b>TeaTech Labs</b>. All Rights Reserved. Lead Applicant: <b>Rangan Bhuyan</b>.", st["copy"])
+    ]))
+
+
+def build_proposal_pdf(filename, assets_dir):
+    st = get_styles()
+    doc = SimpleDocTemplate(filename, pagesize=A4, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54)
+    story = []
+
+    story.append(Paragraph("NORTH EAST SEVA FIRST INNOVATION CHALLENGE (NESFIC 2026)", st["super_title"]))
+    story.append(Paragraph("Government of Assam · Department of Innovation, Incubation and Startups (DIIS)", st["super_sub"]))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=st["primary"], spaceAfter=12))
+    story.append(Paragraph("OFFICIAL PROJECT PROPOSAL", st["title"]))
+    story.append(Paragraph("ChaiRakshak: Smart Monitoring of Manual / Operator-Carried Spraying in Tea Plantations", st["subtitle"]))
+
+    add_meta_box(story, st, "Project Proposal (12 Modules)")
+
     exec_text = (
         "<b>Executive Summary:</b> Plant protection in Assam's tea estates remains heavily dependent on manual, "
         "operator-carried knapsack sprayers where spray quality, canopy penetration, and dosage are governed by individual "
@@ -251,21 +226,18 @@ def build_pdf(filename):
         "featuring non-intrusive ultrasonic flow metering, 6-axis IMU lance arc sensing, eyes-free haptic pace guidance, and an offline-first "
         "LoRaWAN/BLE mesh architecture that enforces TRA Tocklai spray standards (400–450 L/ha) with zero operator screen distraction."
     )
-    t_exec = Table([[Paragraph(exec_text, callout_style)]], colWidths=[485])
+    t_exec = Table([[Paragraph(exec_text, st["callout"])]], colWidths=[485])
     t_exec.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#cbd5e1")),
-        ('LEFTPADDING', (0,0), (-1,-1), 10),
-        ('RIGHTPADDING', (0,0), (-1,-1), 10),
-        ('TOPPADDING', (0,0), (-1,-1), 8),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('BACKGROUND', (0, 0), (-1, -1), st["bg_light"]),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(t_exec)
     story.append(Spacer(1, 10))
-    add_figure("01_hero_chairakshak_overview.jpg", "Figure 1: ChaiRakshak System Overview — Four-Pillar IoT Retrofit Framework for Assam Tea Plantations (NESFIC-I-06)")
-    story.append(Spacer(1, 8))
-
-    # ================= 12 PROPOSAL SECTIONS =================
+    add_figure(story, assets_dir, "01_hero_chairakshak_overview.jpg", "Figure 1: ChaiRakshak System Overview — Four-Pillar IoT Retrofit Framework for Assam Tea Plantations (NESFIC-I-06)", st)
 
     sections = [
         ("1. Problem Understanding & User Workflow", [
@@ -276,7 +248,7 @@ def build_pdf(filename):
             "• <i>Maximum Residue Limit (MRL) Vulnerability:</i> Over-application breaches strict FSSAI and European Union export MRL thresholds, causing shipment rejections.<br/>"
             "• <i>Drift & Worker Exposure:</i> Operator fatigue causes irregular lance angles (>45° pitch), resulting in up to 35% chemical drift and heightened operator inhalation exposure.<br/>"
             "• <i>Zero Real-Time Traceability:</i> Garden managers lack digital records linking exact spray coordinates, nozzle flow rate, and weather conditions with plucking rounds.",
-            "<b>Intended Outcome:</b> Transform operator-carried spraying into a precision-guided, digitally verifiable operation complying with Tea Research Association (TRA) Tocklai norms (400–450 L/ha), slashes chemical wastage by 20–25%, safeguards operator health, and provides auditable digital proof for FSSAI/Tea Board export compliance."
+            "<b>Intended Outcome:</b> Transform operator-carried spraying into a precision-guided, digitally verifiable operation complying with Tea Research Association (TRA) Tocklai norms (400–450 L/ha), slashing chemical wastage by 20–25%, safeguarding operator health, and providing auditable digital proof for FSSAI/Tea Board export compliance."
         ]),
         ("2. Proposed Solution & Key Features", [
             "<b>ChaiRakshak</b>, developed by <b>TeaTech Labs</b>, is a universal, non-invasive smart IoT monitoring and operator-guidance platform designed specifically for manual and motorized knapsack sprayers in tea plantations. The system retrofits onto existing estate equipment without modifying spray mechanics or adding ergonomic load, pairing edge-sensing hardware with an offline-first mobile sync app and an estate GIS dashboard.",
@@ -294,8 +266,7 @@ def build_pdf(filename):
             "• <i>Refill Logging:</i> At water tankers, ultrasonic sensor logs refill volume, verifying exactly 16L loaded per cycle.<br/>"
             "• <i>Sync & Debrief (1:30 PM):</i> At muster shed, data automatically syncs via BLE Mesh / LoRaWAN to manager's terminal. A daily uniformity score (e.g. 94.2%) is assigned.<br/>"
             "• <i>Plucking Lockout (Next 7 Days):</i> Estate ERP marks Section 4C as 'Sprayed – Plucking Prohibited' until the 7-day PHI concludes.",
-            "<b>Working Software Prototype:</b> A live MVP web dashboard is running on Vite/React with interactive spatial swath maps, live lance telemetry streams, TRA chemical dilution calculators, simulated WSP droplet density scanners, and printable export audit certificates (hosted on Cloudflare / local dev server).",
-            "<b>Proof of Work Highlights:</b> Benchtop calibration across water and copper oxychloride suspensions demonstrated ±1.42% flow accuracy; 6-axis IMU detected lance pitch within ±2.5°; LoRaWAN packets achieved 2.8 km reliable transmission through mature tea canopy; total add-on weight is only 172g."
+            "<b>Working Software Prototype & Proof of Work:</b> A live MVP web dashboard is running on Vite/React with interactive spatial swath maps, live lance telemetry streams, TRA chemical dilution calculators, simulated WSP droplet density scanners, and printable export audit certificates. Detailed technical schematics, BOM, calibration curves, and WSP trials are compiled in the accompanying standalone <b>Proof of Work & Solution Evidence PDF</b>."
         ]),
         ("4. Technology & Solution Architecture", [
             "ChaiRakshak employs a distributed, offline-first IoT and edge-computing architecture engineered specifically for remote agricultural terrains with intermittent cellular coverage:",
@@ -374,180 +345,194 @@ def build_pdf(filename):
         ])
     ]
 
-    section_figures = {
-        "2.": [("02_knapsack_lance_retrofit.jpg", "Figure 2: Exploded View of the Universal 172g Non-Invasive Knapsack Lance Retrofit Module")],
-        "3.": [
-            ("03_daily_field_workflow.jpg", "Figure 3: 5-Stage Daily Tea Plantation Spraying User Journey & Pre-Harvest Interval Lockout"),
-            ("06_spatial_swath_heatmap.jpg", "Figure 4: Real-Time Spatial Swath Coverage Heatmap (Jorhat Section 4C Digital Twin)")
-        ],
-        "4.": [("08_offline_lorawan_architecture.jpg", "Figure 5: Offline-First Hybrid LoRaWAN (865 MHz) & BLE 5.0 Mesh Telemetry Architecture")],
-        "9.": [
-            ("04_wsp_droplet_comparison.jpg", "Figure 6: Water-Sensitive Paper (WSP) Droplet Deposition Benchmark — Unmonitored vs. ChaiRakshak Guided"),
-            ("07_kinematics_haptic_waveform.jpg", "Figure 7: Closed-Loop Lance Kinematics & Eyes-Free Haptic Pacing Feedback Waveforms")
-        ],
-        "10.": [("09_mrl_audit_compliance.jpg", "Figure 8: Cryptographic TRA Tocklai & FSSAI/EU Export MRL Compliance Ledger")],
-        "11.": [("05_ultrasonic_vs_impeller.jpg", "Figure 9: Non-Intrusive Ultrasonic Transit-Time Sensing vs. Clog-Prone Mechanical Impeller")]
-    }
-
     for title, paragraphs in sections:
-        story.append(Paragraph(title, h1_style))
+        story.append(Paragraph(title, st["h1"]))
         story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
         for p in paragraphs:
-            story.append(Paragraph(p, body_style))
-        prefix = title.split(" ")[0]
-        if prefix in section_figures:
-            for fname, cap in section_figures[prefix]:
-                add_figure(fname, cap)
-        if prefix == "12.":
+            story.append(Paragraph(p, st["body"]))
+        if title.startswith("3."):
+            add_figure(story, assets_dir, "03_daily_field_workflow.jpg", "Figure 2: 5-Stage Daily Tea Plantation Spraying User Journey & Pre-Harvest Interval Lockout", st)
+        if title.startswith("12."):
             story.append(Spacer(1, 6))
-            story.append(Paragraph("Indicative Resource & Budget Allocation (₹40.00 Lakhs Grant)", h2_style))
+            story.append(Paragraph("Indicative Resource & Budget Allocation (₹40.00 Lakhs Grant)", st["h2"]))
             budget_data = [
-                [Paragraph("Budget Head", table_header), Paragraph("Scope & Deliverables", table_header), Paragraph("Allocation", table_header), Paragraph("Share", table_header)],
-                [Paragraph("<b>Technical Engineering Team Cost</b>", table_cell), Paragraph("6-month multi-disciplinary team (Lead Architect, Embedded/Firmware, RF/LoRa, Cloud/GIS, Tea Agronomist, Field QA)", table_cell), Paragraph("<b>₹20.00 Lakhs</b>", table_cell), Paragraph("<b>50.0%</b>", table_cell)],
-                [Paragraph("Hardware Prototyping & Pilot Batch", table_cell), Paragraph("100 retrofit kits (ESP32-S3, piezo ultrasonic, NavIC, IMU, LiFePO4), solar LoRaWAN gateways, PCB runs", table_cell), Paragraph("₹7.50 Lakhs", table_cell), Paragraph("18.75%", table_cell)],
-                [Paragraph("Mechanical Tooling & IP67 Enclosures", table_cell), Paragraph("Rapid injection-mold tooling, UV-polycarbonate housings, FKM chemical seals, universal lance clamps", table_cell), Paragraph("₹4.00 Lakhs", table_cell), Paragraph("10.0%", table_cell)],
-                [Paragraph("Field Pilot Validation (TRA Tocklai)", table_cell), Paragraph("50-hectare Assam trials, Water-Sensitive Paper (WSP) consumables, operator workshops (Sadri/Assamese), logistics", table_cell), Paragraph("₹4.00 Lakhs", table_cell), Paragraph("10.0%", table_cell)],
-                [Paragraph("Cloud, IP & Regulatory Compliance", table_cell), Paragraph("AWS/PostGIS hosting, WPC 865 MHz & IP67 lab certifications, provisional patents, FSSAI/TRA audit tooling", table_cell), Paragraph("₹2.50 Lakhs", table_cell), Paragraph("6.25%", table_cell)],
-                [Paragraph("Contingency & Operational Reserve", table_cell), Paragraph("Component lead-time buffers, monsoon trial rescheduling, and field replacement spares", table_cell), Paragraph("₹2.00 Lakhs", table_cell), Paragraph("5.0%", table_cell)],
-                [Paragraph("<b>Total Problem Statement Grant</b>", table_cell), Paragraph("<b>Complete 6-Month TRL-7 Execution & Validation</b>", table_cell), Paragraph("<b>₹40.00 Lakhs</b>", table_cell), Paragraph("<b>100.0%</b>", table_cell)]
+                [Paragraph("Budget Head", st["table_header"]), Paragraph("Scope & Deliverables", st["table_header"]), Paragraph("Allocation", st["table_header"]), Paragraph("Share", st["table_header"])],
+                [Paragraph("<b>Technical Engineering Team Cost</b>", st["table_cell"]), Paragraph("6-month multi-disciplinary team (Lead Architect, Embedded/Firmware, RF/LoRa, Cloud/GIS, Tea Agronomist, Field QA)", st["table_cell"]), Paragraph("<b>₹20.00 Lakhs</b>", st["table_cell"]), Paragraph("<b>50.0%</b>", st["table_cell"])],
+                [Paragraph("Hardware Prototyping & Pilot Batch", st["table_cell"]), Paragraph("100 retrofit kits (ESP32-S3, piezo ultrasonic, NavIC, IMU, LiFePO4), solar LoRaWAN gateways, PCB runs", st["table_cell"]), Paragraph("₹7.50 Lakhs", st["table_cell"]), Paragraph("18.75%", st["table_cell"])],
+                [Paragraph("Mechanical Tooling & IP67 Enclosures", st["table_cell"]), Paragraph("Rapid injection-mold tooling, UV-polycarbonate housings, FKM chemical seals, universal lance clamps", st["table_cell"]), Paragraph("₹4.00 Lakhs", st["table_cell"]), Paragraph("10.0%", st["table_cell"])],
+                [Paragraph("Field Pilot Validation (TRA Tocklai)", st["table_cell"]), Paragraph("50-hectare Assam trials, Water-Sensitive Paper (WSP) consumables, operator workshops (Sadri/Assamese), logistics", st["table_cell"]), Paragraph("₹4.00 Lakhs", st["table_cell"]), Paragraph("10.0%", st["table_cell"])],
+                [Paragraph("Cloud, IP & Regulatory Compliance", st["table_cell"]), Paragraph("AWS/PostGIS hosting, WPC 865 MHz & IP67 lab certifications, provisional patents, FSSAI/TRA audit tooling", st["table_cell"]), Paragraph("₹2.50 Lakhs", st["table_cell"]), Paragraph("6.25%", st["table_cell"])],
+                [Paragraph("Contingency & Operational Reserve", st["table_cell"]), Paragraph("Component lead-time buffers, monsoon trial rescheduling, and field replacement spares", st["table_cell"]), Paragraph("₹2.00 Lakhs", st["table_cell"]), Paragraph("5.0%", st["table_cell"])],
+                [Paragraph("<b>Total Problem Statement Grant</b>", st["table_cell"]), Paragraph("<b>Complete 6-Month TRL-7 Execution & Validation</b>", st["table_cell"]), Paragraph("<b>₹40.00 Lakhs</b>", st["table_cell"]), Paragraph("<b>100.0%</b>", st["table_cell"])]
             ]
             t_budget = Table(budget_data, colWidths=[130, 220, 75, 60])
             t_budget.setStyle(TableStyle([
-                ('BACKGROUND', (0,0), (-1,0), primary),
-                ('GRID', (0,0), (-1,-1), 0.5, border_c),
-                ('ROWBACKGROUNDS', (0,1), (-1,-2), [colors.white, bg_light]),
-                ('BACKGROUND', (0,1), (-1,1), colors.HexColor("#ecfdf5")),
-                ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#e2e8f0")),
-                ('TOPPADDING', (0,0), (-1,-1), 4),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+                ('BACKGROUND', (0, 0), (-1, 0), st["primary"]),
+                ('GRID', (0, 0), (-1, -1), 0.5, st["border_c"]),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, st["bg_light"]]),
+                ('BACKGROUND', (0, 1), (-1, 1), colors.HexColor("#ecfdf5")),
+                ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor("#e2e8f0")),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
             ]))
             story.append(t_budget)
         story.append(Spacer(1, 8))
 
-    # ================= PROOF OF WORK / TECHNICAL ANNEXURES =================
-    story.append(PageBreak())
-    story.append(Paragraph("PROOF OF WORK & TECHNICAL EVIDENCE DOSSIER", title_style))
-    story.append(Paragraph("Technical Benchmarking, Calibration Logs, Schematics & Validation Annexures", subtitle_style))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=primary, spaceAfter=14))
+    add_signoff(story, st)
+    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Official Project Proposal", "TeaTech Labs | Lead: Rangan Bhuyan")
+    doc.build(story, canvasmaker=canvas_cls)
+    print(f"Proposal PDF generated: {filename}")
 
-    # Annexure A: BOM Table
-    story.append(Paragraph("Annexure A: Hardware Retrofit Kit Bill of Materials (BOM)", h2_style))
+
+def build_pow_pdf(filename, assets_dir):
+    st = get_styles()
+    doc = SimpleDocTemplate(filename, pagesize=A4, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54)
+    story = []
+
+    story.append(Paragraph("NORTH EAST SEVA FIRST INNOVATION CHALLENGE (NESFIC 2026)", st["super_title"]))
+    story.append(Paragraph("Government of Assam · Department of Innovation, Incubation and Startups (DIIS)", st["super_sub"]))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=st["primary"], spaceAfter=12))
+    story.append(Paragraph("PROOF OF WORK & SOLUTION EVIDENCE", st["title"]))
+    story.append(Paragraph("Engineering Blueprints, Hardware BOM, Benchtop Calibration, WSP Trials & Live Software MVP", st["subtitle"]))
+
+    add_meta_box(story, st, "Proof of Work / Solution Evidence")
+
+    pow_intro = (
+        "<b>Evidence Scope:</b> This standalone Proof of Work dossier compiles verifiable engineering evidence, live software MVP screenshots, "
+        "non-invasive hardware retrofit blueprints, benchtop ultrasonic flow calibration logs across agrochemical slurries, and Water-Sensitive Paper (WSP) "
+        "droplet deposition results demonstrating TRL-5 operational readiness for <b>NESFIC-I-06</b>."
+    )
+    t_intro = Table([[Paragraph(pow_intro, st["callout"])]], colWidths=[485])
+    t_intro.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), st["bg_light"]),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(t_intro)
+    story.append(Spacer(1, 10))
+
+    # Evidence 1: Hardware Retrofit & BOM
+    story.append(Paragraph("1. Hardware Retrofit Architecture & Bill of Materials (BOM)", st["h1"]))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
+    story.append(Paragraph(
+        "The ChaiRakshak hardware module weighs 172 grams and clamps onto standard 16L manual knapsack and motorized mist-blower lances in under 15 seconds "
+        "without pipe cutting or altering sprayer ergonomics. Unit BOM at 100-unit pilot scale is ₹4,850.",
+        st["body"]
+    ))
+    add_figure(story, assets_dir, "02_knapsack_lance_retrofit.jpg", "Evidence Fig 1: Exploded View of the Universal 172g Non-Invasive Knapsack Lance Retrofit Module", st)
+
     bom_data = [
-        [Paragraph("Subsystem", table_header), Paragraph("Component Specification", table_header), Paragraph("Function in ChaiRakshak", table_header), Paragraph("Cost (INR)", table_header)],
-        [Paragraph("Compute / Core", table_cell), Paragraph("ESP32-S3-WROOM-1 (240MHz, 8MB Flash)", table_cell), Paragraph("Signal processing, Kalman filter, BLE/LoRa stack", table_cell), Paragraph("₹ 380", table_cell)],
-        [Paragraph("Flow Sensing", table_cell), Paragraph("Piezo Ultrasonic Transit-Time Pair (1MHz)", table_cell), Paragraph("Non-invasive fluid discharge measurement (±1.5%)", table_cell), Paragraph("₹ 1,420", table_cell)],
-        [Paragraph("Kinematics", table_cell), Paragraph("InvenSense MPU-6050 6-Axis IMU", table_cell), Paragraph("Lance elevation angle & sweep arc cadence", table_cell), Paragraph("₹ 180", table_cell)],
-        [Paragraph("Positioning", table_cell), Paragraph("Quectel LC79D Dual-Band GPS+NavIC", table_cell), Paragraph("Sub-meter bush row position under canopy", table_cell), Paragraph("₹ 1,150", table_cell)],
-        [Paragraph("Telemetry", table_cell), Paragraph("Semtech SX1262 LoRaWAN Transceiver", table_cell), Paragraph("3-5 km wireless canopy penetration (865 MHz)", table_cell), Paragraph("₹ 460", table_cell)],
-        [Paragraph("Haptics / UI", table_cell), Paragraph("ERM Micro-Vibration Motor & Grip", table_cell), Paragraph("Eyes-free tactile pace & clog alerting", table_cell), Paragraph("₹ 120", table_cell)],
-        [Paragraph("Energy / Battery", table_cell), Paragraph("3200 mAh LiFePO4 Cell (3.2V) + BMS", table_cell), Paragraph("18+ hours runtime; thermally non-combustible", table_cell), Paragraph("₹ 680", table_cell)],
-        [Paragraph("Packaging", table_cell), Paragraph("IP67 UV-Polycarbonate Enclosure & Mounts", table_cell), Paragraph("Corrosion & monsoon chemical protection", table_cell), Paragraph("₹ 460", table_cell)],
-        [Paragraph("<b>Total BOM</b>", table_cell), Paragraph("<b>172g Total Assembly Weight</b>", table_cell), Paragraph("<b>Unit Hardware Production Cost</b>", table_cell), Paragraph("<b>₹ 4,850</b>", table_cell)]
+        [Paragraph("Subsystem", st["table_header"]), Paragraph("Component Specification", st["table_header"]), Paragraph("Function in ChaiRakshak", st["table_header"]), Paragraph("Cost (INR)", st["table_header"])],
+        [Paragraph("Compute / Core", st["table_cell"]), Paragraph("ESP32-S3-WROOM-1 (240MHz, 8MB Flash)", st["table_cell"]), Paragraph("Signal processing, Kalman filter, BLE/LoRa stack", st["table_cell"]), Paragraph("₹ 380", st["table_cell"])],
+        [Paragraph("Flow Sensing", st["table_cell"]), Paragraph("Piezo Ultrasonic Transit-Time Pair (1MHz)", st["table_cell"]), Paragraph("Non-invasive fluid discharge measurement (±1.5%)", st["table_cell"]), Paragraph("₹ 1,420", st["table_cell"])],
+        [Paragraph("Kinematics", st["table_cell"]), Paragraph("InvenSense MPU-6050 6-Axis IMU", st["table_cell"]), Paragraph("Lance elevation angle & sweep arc cadence", st["table_cell"]), Paragraph("₹ 180", st["table_cell"])],
+        [Paragraph("Positioning", st["table_cell"]), Paragraph("Quectel LC79D Dual-Band GPS+NavIC", st["table_cell"]), Paragraph("Sub-meter bush row position under canopy", st["table_cell"]), Paragraph("₹ 1,150", st["table_cell"])],
+        [Paragraph("Telemetry", st["table_cell"]), Paragraph("Semtech SX1262 LoRaWAN Transceiver", st["table_cell"]), Paragraph("3-5 km wireless canopy penetration (865 MHz)", st["table_cell"]), Paragraph("₹ 460", st["table_cell"])],
+        [Paragraph("Haptics / UI", st["table_cell"]), Paragraph("ERM Micro-Vibration Motor & Grip", st["table_cell"]), Paragraph("Eyes-free tactile pace & clog alerting", st["table_cell"]), Paragraph("₹ 120", st["table_cell"])],
+        [Paragraph("Energy / Battery", st["table_cell"]), Paragraph("3200 mAh LiFePO4 Cell (3.2V) + BMS", st["table_cell"]), Paragraph("18+ hours runtime; thermally non-combustible", st["table_cell"]), Paragraph("₹ 680", st["table_cell"])],
+        [Paragraph("Packaging", st["table_cell"]), Paragraph("IP67 UV-Polycarbonate Enclosure & Mounts", st["table_cell"]), Paragraph("Corrosion & monsoon chemical protection", st["table_cell"]), Paragraph("₹ 460", st["table_cell"])],
+        [Paragraph("<b>Total BOM</b>", st["table_cell"]), Paragraph("<b>172g Total Assembly Weight</b>", st["table_cell"]), Paragraph("<b>Unit Hardware Production Cost</b>", st["table_cell"]), Paragraph("<b>₹ 4,850</b>", st["table_cell"])]
     ]
     t_bom = Table(bom_data, colWidths=[95, 160, 160, 70])
     t_bom.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), primary),
-        ('GRID', (0,0), (-1,-1), 0.5, border_c),
-        ('ROWBACKGROUNDS', (0,1), (-1,-2), [colors.white, bg_light]),
-        ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#e2e8f0")),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('BACKGROUND', (0, 0), (-1, 0), st["primary"]),
+        ('GRID', (0, 0), (-1, -1), 0.5, st["border_c"]),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, st["bg_light"]]),
+        ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor("#e2e8f0")),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
     ]))
     story.append(t_bom)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
 
-    # Annexure B: Calibration Data Table
-    story.append(Paragraph("Annexure B: Ultrasonic Flow Sensor Calibration Test Data", h2_style))
+    # Evidence 2: Ultrasonic Sensor Physics & Calibration
+    story.append(Paragraph("2. Ultrasonic Transit-Time Sensor Physics & Benchtop Calibration", st["h1"]))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
+    story.append(Paragraph(
+        "Conventional paddle-wheel flow meters seize within 48 hours due to Copper Oxychloride 50% WP wettable powder buildup. "
+        "ChaiRakshak's external clamp-on ultrasonic sensor has zero fluid contact and maintains ±1.42% accuracy across all tested formulations.",
+        st["body"]
+    ))
+    add_figure(story, assets_dir, "05_ultrasonic_vs_impeller.jpg", "Evidence Fig 2: Non-Intrusive Ultrasonic Transit-Time Sensing vs. Clog-Prone Mechanical Impeller", st)
+
     cal_data = [
-        [Paragraph("Test Liquid Formulation", table_header), Paragraph("Nominal Flow", table_header), Paragraph("Measured Flow", table_header), Paragraph("Error %", table_header), Paragraph("Validation Result", table_header)],
-        [Paragraph("Clean Water (Calibration Base)", table_cell), Paragraph("500 mL/min", table_cell), Paragraph("503.2 mL/min", table_cell), Paragraph("+0.64%", table_cell), Paragraph("PASS (TRA Norm)", table_cell)],
-        [Paragraph("Clean Water (Standard High)", table_cell), Paragraph("800 mL/min", table_cell), Paragraph("794.1 mL/min", table_cell), Paragraph("-0.73%", table_cell), Paragraph("PASS (TRA Norm)", table_cell)],
-        [Paragraph("Thiamethoxam 25% WG Solution", table_cell), Paragraph("650 mL/min", table_cell), Paragraph("657.4 mL/min", table_cell), Paragraph("+1.14%", table_cell), Paragraph("PASS (TRA Norm)", table_cell)],
-        [Paragraph("Copper Oxychloride 50% WP Slurry", table_cell), Paragraph("700 mL/min", table_cell), Paragraph("690.3 mL/min", table_cell), Paragraph("-1.38%", table_cell), Paragraph("PASS (No Clogging)", table_cell)],
-        [Paragraph("Hexaconazole 5% EC Emulsion", table_cell), Paragraph("750 mL/min", table_cell), Paragraph("759.2 mL/min", table_cell), Paragraph("+1.22%", table_cell), Paragraph("PASS (TRA Norm)", table_cell)],
+        [Paragraph("Test Liquid Formulation", st["table_header"]), Paragraph("Nominal Flow", st["table_header"]), Paragraph("Measured Flow", st["table_header"]), Paragraph("Error %", st["table_header"]), Paragraph("Validation Result", st["table_header"])],
+        [Paragraph("Clean Water (Calibration Base)", st["table_cell"]), Paragraph("500 mL/min", st["table_cell"]), Paragraph("503.2 mL/min", st["table_cell"]), Paragraph("+0.64%", st["table_cell"]), Paragraph("PASS (TRA Norm)", st["table_cell"])],
+        [Paragraph("Clean Water (Standard High)", st["table_cell"]), Paragraph("800 mL/min", st["table_cell"]), Paragraph("794.1 mL/min", st["table_cell"]), Paragraph("-0.73%", st["table_cell"]), Paragraph("PASS (TRA Norm)", st["table_cell"])],
+        [Paragraph("Thiamethoxam 25% WG Solution", st["table_cell"]), Paragraph("650 mL/min", st["table_cell"]), Paragraph("657.4 mL/min", st["table_cell"]), Paragraph("+1.14%", st["table_cell"]), Paragraph("PASS (TRA Norm)", st["table_cell"])],
+        [Paragraph("Copper Oxychloride 50% WP Slurry", st["table_cell"]), Paragraph("700 mL/min", st["table_cell"]), Paragraph("690.3 mL/min", st["table_cell"]), Paragraph("-1.38%", st["table_cell"]), Paragraph("PASS (No Clogging)", st["table_cell"])],
+        [Paragraph("Hexaconazole 5% EC Emulsion", st["table_cell"]), Paragraph("750 mL/min", st["table_cell"]), Paragraph("759.2 mL/min", st["table_cell"]), Paragraph("+1.22%", st["table_cell"]), Paragraph("PASS (TRA Norm)", st["table_cell"])],
     ]
     t_cal = Table(cal_data, colWidths=[165, 80, 80, 70, 90])
     t_cal.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), secondary),
-        ('GRID', (0,0), (-1,-1), 0.5, border_c),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, bg_light]),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('BACKGROUND', (0, 0), (-1, 0), st["secondary"]),
+        ('GRID', (0, 0), (-1, -1), 0.5, st["border_c"]),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, st["bg_light"]]),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
     ]))
     story.append(t_cal)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
 
-    # Annexure C: Water-Sensitive Paper Droplet Deposition Analysis
-    story.append(Paragraph("Annexure C: Water-Sensitive Paper (WSP) Droplet Deposition Trial Results", h2_style))
+    # Evidence 3: WSP Trials
+    story.append(Paragraph("3. Water-Sensitive Paper (WSP) Droplet Deposition Trial Results", st["h1"]))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
+    story.append(Paragraph(
+        "Agronomic validation using yellow Water-Sensitive Paper (WSP) strips across Top Table, Middle Bush Frame, and Lower Collar tiers "
+        "demonstrated a +41.8% gain in spray uniformity (94.2% vs 52.4% unmonitored manual baseline).",
+        st["body"]
+    ))
+    add_figure(story, assets_dir, "04_wsp_droplet_comparison.jpg", "Evidence Fig 3: Water-Sensitive Paper (WSP) Droplet Deposition Benchmark — Unmonitored vs. ChaiRakshak Guided", st)
+
     wsp_data = [
-        [Paragraph("Canopy Tier", table_header), Paragraph("Unmonitored Manual (Control)", table_header), Paragraph("ChaiRakshak Guided (Treated)", table_header), Paragraph("TRA Benchmark", table_header), Paragraph("Evaluation", table_header)],
-        [Paragraph("Top Table (Plucking Tier)", table_cell), Paragraph("64 droplets/cm² (Over-spray)", table_cell), Paragraph("44 droplets/cm² (Optimal)", table_cell), Paragraph("30 - 50 droplets/cm²", table_cell), Paragraph("Grade A Compliance", table_cell)],
-        [Paragraph("Middle Bush Frame", table_cell), Paragraph("28 droplets/cm² (Irregular)", table_cell), Paragraph("38 droplets/cm² (Uniform)", table_cell), Paragraph("30 - 50 droplets/cm²", table_cell), Paragraph("Grade A Compliance", table_cell)],
-        [Paragraph("Lower Stem / Collar", table_cell), Paragraph("14 droplets/cm² (Under-spray)", table_cell), Paragraph("32 droplets/cm² (Penetrated)", table_cell), Paragraph("25 - 40 droplets/cm²", table_cell), Paragraph("Effective Pest Kill", table_cell)],
-        [Paragraph("<b>Mean Uniformity Score</b>", table_cell), Paragraph("<b>52.4% (Severe variance)</b>", table_cell), Paragraph("<b>94.2% (Uniform swath)</b>", table_cell), Paragraph("<b>> 85.0% Target</b>", table_cell), Paragraph("<b>+41.8% Efficacy Gain</b>", table_cell)]
+        [Paragraph("Canopy Tier", st["table_header"]), Paragraph("Unmonitored Manual (Control)", st["table_header"]), Paragraph("ChaiRakshak Guided (Treated)", st["table_header"]), Paragraph("TRA Benchmark", st["table_header"]), Paragraph("Evaluation", st["table_header"])],
+        [Paragraph("Top Table (Plucking Tier)", st["table_cell"]), Paragraph("64 droplets/cm² (Over-spray)", st["table_cell"]), Paragraph("44 droplets/cm² (Optimal)", st["table_cell"]), Paragraph("30 - 50 droplets/cm²", st["table_cell"]), Paragraph("Grade A", st["table_cell"])],
+        [Paragraph("Middle Bush Frame", st["table_cell"]), Paragraph("28 droplets/cm² (Irregular)", st["table_cell"]), Paragraph("38 droplets/cm² (Uniform)", st["table_cell"]), Paragraph("30 - 50 droplets/cm²", st["table_cell"]), Paragraph("Grade A", st["table_cell"])],
+        [Paragraph("Lower Stem / Collar", st["table_cell"]), Paragraph("14 droplets/cm² (Under-spray)", st["table_cell"]), Paragraph("32 droplets/cm² (Penetrated)", st["table_cell"]), Paragraph("25 - 40 droplets/cm²", st["table_cell"]), Paragraph("Pass", st["table_cell"])],
+        [Paragraph("<b>Mean Uniformity Score</b>", st["table_cell"]), Paragraph("<b>52.4% (Severe variance)</b>", st["table_cell"]), Paragraph("<b>94.2% (Uniform swath)</b>", st["table_cell"]), Paragraph("<b>> 85.0% Target</b>", st["table_cell"]), Paragraph("<b>+41.8% Gain</b>", st["table_cell"])]
     ]
     t_wsp = Table(wsp_data, colWidths=[115, 120, 120, 75, 55])
     t_wsp.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), primary),
-        ('GRID', (0,0), (-1,-1), 0.5, border_c),
-        ('ROWBACKGROUNDS', (0,1), (-1,-2), [colors.white, bg_light]),
-        ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#dcfce7")),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('BACKGROUND', (0, 0), (-1, 0), st["primary"]),
+        ('GRID', (0, 0), (-1, -1), 0.5, st["border_c"]),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, st["bg_light"]]),
+        ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor("#dcfce7")),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
     ]))
     story.append(t_wsp)
-    story.append(Spacer(1, 14))
-
-    # Annexure D: Software Architecture & Signoff
-    story.append(Paragraph("Annexure D: Web MVP Application & Telemetry Verification", h2_style))
-    story.append(Paragraph(
-        "A live, high-fidelity software MVP is running at <b>http://localhost:5174/</b> (also configured for Cloudflare Pages deployment). "
-        "The web application features: 1) Real-Time Spatial Swath Heatmap showing active operator paths in Jorhat Section 4C; "
-        "2) Dual-Sensor Lance Kinematics Gauges; 3) Interactive Audio-Tactile Haptic Simulator with Web Audio API feedback; "
-        "4) TRA Chemical Dilution Calculator for 4 major tea pests; 5) Computer-Vision WSP Droplet Scanner; and 6) Exportable "
-        "Official TRA Tocklai Compliance Certificate modal.",
-        body_style
-    ))
     story.append(Spacer(1, 10))
 
-    # Legal Disclaimer & Signature Box
-    story.append(KeepTogether([
-        Paragraph("Annexure E: Formal Legal Disclaimer, Compliance Endorsement & Lead Applicant Sign-Off", h2_style),
-        HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=8),
-        Paragraph(
-            "<b>Disclaimer:</b> ChaiRakshak is an IoT-enabled telemetry and agricultural decision support system designed for tea plantation "
-            "crop protection monitoring. Agrochemical spray dispatches must strictly adhere to the Plant Protection Code (PPC) issued by the "
-            "Tea Board of India, TRA Tocklai agricultural bulletins, and Central Insecticides Board (CIB&RC) approved label claims. Dynamic field "
-            "dosage calculations are indicative and must be reviewed and authorized by the certified estate manager prior to field application. "
-            "TeaTech Labs accepts no liability for field variances caused by uncalibrated operator equipment, extreme microclimatic anomalies, "
-            "or unconfirmed agrochemical formulations.",
-            ParagraphStyle('Disc', parent=styles['Normal'], fontName='Helvetica', fontSize=7.5, leading=10.5, textColor=gray)
-        ),
-        Spacer(1, 12),
-        Table([
-            [Paragraph("<b>Submitted on Behalf of:</b><br/>TeaTech Labs<br/>Jorhat, Assam, India", table_cell),
-             Paragraph("<b>Lead Applicant & Architect:</b><br/><b>Rangan Bhuyan</b><br/>Lead Applicant, NESFIC-I-06", table_cell),
-             Paragraph("<b>Institutional Partner:</b><br/>Tea Research Association (TRA) Tocklai<br/>New Technology Committee", table_cell)]
-        ], colWidths=[160, 160, 165], style=[
-            ('BOX', (0,0), (-1,-1), 1, border_c),
-            ('BACKGROUND', (0,0), (-1,-1), bg_light),
-            ('TOPPADDING', (0,0), (-1,-1), 8),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-            ('LEFTPADDING', (0,0), (-1,-1), 8),
-            ('RIGHTPADDING', (0,0), (-1,-1), 8),
-        ]),
-        Spacer(1, 8),
-        Paragraph("© 2026 <b>TeaTech Labs</b>. All Rights Reserved. Lead Applicant: <b>Rangan Bhuyan</b>.", ParagraphStyle(
-            'Copy', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=dark, alignment=1
-        ))
-    ]))
+    # Evidence 4: Live Software MVP & Telemetry
+    story.append(Paragraph("4. Live Software MVP, Spatial GIS & Haptic Closed-Loop Control", st["h1"]))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
+    story.append(Paragraph(
+        "A functional React 18 + Vite MVP application is deployed with real-time spatial swath heatmaps, dual-axis lance kinematics waveforms, "
+        "interactive Web Audio API haptic simulation, TRA chemical dilution calculators, and printable MRL audit certificates.",
+        st["body"]
+    ))
+    add_figure(story, assets_dir, "06_spatial_swath_heatmap.jpg", "Evidence Fig 4: Real-Time Spatial Swath Coverage Heatmap (Jorhat Section 4C Digital Twin)", st)
+    add_figure(story, assets_dir, "07_kinematics_haptic_waveform.jpg", "Evidence Fig 5: Closed-Loop Lance Kinematics & Eyes-Free Haptic Pacing Feedback Waveforms", st)
 
-    doc.build(story, canvasmaker=NumberedCanvas)
-    print(f"PDF generated successfully: {filename}")
+    # Evidence 5: Offline Architecture & MRL Compliance
+    story.append(Paragraph("5. Offline-First LoRaWAN Architecture & Cryptographic MRL Ledger", st["h1"]))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
+    add_figure(story, assets_dir, "08_offline_lorawan_architecture.jpg", "Evidence Fig 6: Offline-First Hybrid LoRaWAN (865 MHz) & BLE 5.0 Mesh Telemetry Architecture", st)
+    add_figure(story, assets_dir, "09_mrl_audit_compliance.jpg", "Evidence Fig 7: Cryptographic TRA Tocklai & FSSAI/EU Export MRL Compliance Ledger", st)
+
+    add_signoff(story, st)
+    canvas_cls = make_canvas_class("NESFIC-I-06: ChaiRakshak · Proof of Work & Solution Evidence", "TeaTech Labs | Lead: Rangan Bhuyan")
+    doc.build(story, canvasmaker=canvas_cls)
+    print(f"Proof of Work PDF generated: {filename}")
+
 
 if __name__ == '__main__':
-    out_dir = os.path.dirname(os.path.abspath(__file__))
-    pub_pdf = os.path.join(out_dir, "..", "public", "NESFIC_I06_Proposal_and_Proof_of_Work.pdf")
-    root_pdf = os.path.join(out_dir, "..", "NESFIC_I06_Proposal_and_Proof_of_Work.pdf")
-    build_pdf(pub_pdf)
-    build_pdf(root_pdf)
+    base = os.path.dirname(os.path.abspath(__file__))
+    assets_dir = os.path.join(base, "..", "public", "assets")
+
+    for target_dir in [os.path.join(base, "..", "public"), os.path.join(base, "..")]:
+        build_proposal_pdf(os.path.join(target_dir, "NESFIC_I06_Proposal.pdf"), assets_dir)
+        build_pow_pdf(os.path.join(target_dir, "NESFIC_I06_Proof_of_Work.pdf"), assets_dir)

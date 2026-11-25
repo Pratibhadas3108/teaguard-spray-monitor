@@ -176,15 +176,25 @@ export default function App() {
             <span className="text-emerald-700 font-medium">Lead: Rangan Bhuyan</span>
           </div>
 
-          {/* Download PDF Button */}
-          <a
-            href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
-            download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Proposal & PoW PDF</span>
-          </a>
+          {/* Download PDFs */}
+          <div className="hidden lg:flex items-center gap-2">
+            <a
+              href="/NESFIC_I06_Proposal.pdf"
+              download="NESFIC_I06_Proposal.pdf"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Proposal PDF</span>
+            </a>
+            <a
+              href="/NESFIC_I06_Proof_of_Work.pdf"
+              download="NESFIC_I06_Proof_of_Work.pdf"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-teal-50 border border-teal-200 text-teal-800 hover:bg-teal-100 transition shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>PoW PDF</span>
+            </a>
+          </div>
 
           {/* Weather Widget */}
           <div className="flex items-center gap-2 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
@@ -928,14 +938,24 @@ export default function App() {
                   </p>
                 </div>
 
-                <a
-                  href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
-                  download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
-                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md hover:shadow-lg"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download Official PDF (8 Pages)</span>
-                </a>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="/NESFIC_I06_Proposal.pdf"
+                    download="NESFIC_I06_Proposal.pdf"
+                    className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md hover:shadow-lg"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Proposal PDF (1.7 MB)</span>
+                  </a>
+                  <a
+                    href="/NESFIC_I06_Proof_of_Work.pdf"
+                    download="NESFIC_I06_Proof_of_Work.pdf"
+                    className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md hover:shadow-lg"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Proof of Work PDF (5.6 MB)</span>
+                  </a>
+                </div>
               </div>
 
               {/* Quick Meta Stats Grid */}
@@ -1275,16 +1295,23 @@ export default function App() {
 
           <div className="space-y-2">
             <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Proposal & Artifacts</h4>
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col items-start">
               <a 
-                href="/NESFIC_I06_Proposal_and_Proof_of_Work.pdf" 
-                download="NESFIC_I06_Proposal_and_Proof_of_Work.pdf"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition"
+                href="/NESFIC_I06_Proposal.pdf" 
+                download="NESFIC_I06_Proposal.pdf"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition"
               >
-                <Download className="w-3.5 h-3.5" /> Download Proposal & PoW PDF
+                <Download className="w-3.5 h-3.5" /> Proposal PDF (12 Modules)
+              </a>
+              <a 
+                href="/NESFIC_I06_Proof_of_Work.pdf" 
+                download="NESFIC_I06_Proof_of_Work.pdf"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-sm transition"
+              >
+                <Download className="w-3.5 h-3.5" /> Proof of Work PDF (Evidence)
               </a>
               <p className="text-[10px] text-slate-400 leading-normal">
-                Official 8-page submission dossier including 12 sections, hardware BOM, and WSP trial results.
+                Standalone PDFs formatted for NESFIC-I-06 portal upload (&lt;10 MB each).
               </p>
             </div>
           </div>
